@@ -31,6 +31,15 @@ async function onTextMessage(text: string) {
     }
 }
 
+function shutdown() {
+    console.log("Shutting down...");
+    bot.stop();
+    process.exit(0);
+}
+
+process.once("SIGINT", shutdown);
+process.once("SIGTERM", shutdown);
+
 async function main(): Promise<void> {
     try {
         setBotHandlers(onTextMessage);

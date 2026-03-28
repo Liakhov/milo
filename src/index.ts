@@ -2,13 +2,13 @@ import {TextBlock} from "@anthropic-ai/sdk/resources";
 import 'dotenv/config';
 
 import {bot, setBotHandlers} from "./bot";
-import {ai} from "./ai";
+import {ai, MODEL} from "./ai";
 import {SYSTEM_PROMPT} from "./prompts/system";
 
 async function onTextMessage(text: string) {
     try {
         const response = await ai.messages.create({
-            model: "claude-haiku-4-5",
+            model: MODEL,
             max_tokens: 1024,
             system: [
                 {

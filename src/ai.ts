@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-export const ai = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY
-});
+export const MODEL = "claude-haiku-4-5-latest";
+
+export const ai = new Anthropic();

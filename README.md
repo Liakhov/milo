@@ -1,45 +1,69 @@
-# MILO — My Intelligent Life Operator
+# MILO
 
-> A personal AI assistant that lives in Telegram.
-> Talks like a friend. Short, honest, with a light touch of humor.
+**My Intelligent Life Operator** — a personal AI assistant that lives in Telegram.
 
----
-
-## What MILO does now
-
-- 💬 **Answers text messages** — via Claude Haiku 4.5 through Telegram
-- 🧠 **Has personality** — direct, warm, no corporate fluff
-
-## What MILO will do
-
-- 📞 **Make phone calls** — book appointments at salons, doctors, restaurants
-- 📅 **Manage calendar** — create, read and find free slots in Google Calendar
-- 🎙️ **Understand voice** — transcribe Telegram voice messages via Whisper
-- 💪 **Track fitness** — log workouts, track PRs, monitor progress
-- 🧠 **Remember everything** — contacts, preferences, past decisions
-- ✅ **Verify results** — never say "done" unless it actually is
+Send a text or voice message. MILO figures out what to do and does it — searches the web, books appointments, manages your calendar, tracks workouts. Talks like a friend: short, honest, occasionally funny.
 
 ---
 
-## Character
+## How it works
 
-MILO is not a bot. He's the friend who actually picks up the phone when you need something done.
+```mermaid
+flowchart TD
+    A([Telegram\ntext · voice · file]) --> B[STT — Whisper\nvoice only]
+    B --> C[Context builder\nSOUL.md + skill headers · cached\nsummary + last 5 messages · cached]
 
-- Speaks directly — no filler words, no "Great question!"
-- Remembers what matters — your doctor's name, that you hate early meetings
-- Occasionally funny — but only when it fits
-- Honest about failures — if something didn't work, he says so
+    E([Skills\nSKILL.md instructions\npersonality · rules]) --> D
+    C --> D[Agent loop\nClaude Haiku 4.5\nmax 5 turns · budget cap $0.02]
+    D <-.loop.-> F([Tools\nweb_search · calendar\nvapi · gmail · fitness])
 
+    D --> G[Verifier\nresult check]
+    G --> H[Memory update\nSQLite + MD files]
+    H --> I([Telegram reply\ntext or voice])
+
+    style A fill:#d1f5ea,stroke:#0f6e56,color:#085041
+    style I fill:#d1f5ea,stroke:#0f6e56,color:#085041
+    style D fill:#eeedfe,stroke:#534ab7,color:#3c3489
+    style C fill:#faeeda,stroke:#854f0b,color:#633806
+    style E fill:#e6f1fb,stroke:#185fa5,color:#0c447c
+    style F fill:#faece7,stroke:#993c1d,color:#712b13
+    style G fill:#eaf3de,stroke:#3b6d11,color:#27500a
+    style B fill:#f1efe8,stroke:#5f5e5a,color:#444441
+    style H fill:#f1efe8,stroke:#5f5e5a,color:#444441
 ```
-You:   "Book me a haircut for Friday"
-MILO:  "Done. Style at 11:00. Confirmed."
 
-You:   "What do I have tomorrow?"
-MILO:  "Morning call at 9, gym at 18. Pretty chill day."
+One agent loop — no fixed routing. Claude sees the message, picks tools, executes steps, and replies when done.
 
-You:   "Did the doctor appointment go through?"
-MILO:  "Tried twice. They're not picking up. Want me to try again later?"
+**Example — pharmacy hours:**
 ```
+You:   "дізнайся до котрої працює аптека на Хрещатику"
+Turn 1: web_search("аптека Хрещатик години роботи")
+Turn 2: results received → form reply
+MILO:  "Аптека на Хрещатику 22 працює до 22:00."
+```
+
+**Example — book a haircut:**
+```
+You:   "знайди перукарню і запишись на п'ятницю"
+Turn 1: web_search("перукарня поруч")
+Turn 2: make_phone_call(number, "записатись на п'ятницю")
+Turn 3: create_calendar_event("Перукарня", "Friday 11:00")
+MILO:  "Done. Style at 11 on Friday. Added to calendar."
+```
+
+---
+
+## What it does
+
+| | |
+|---|---|
+| 💬 | Answers questions and has conversations |
+| 🔍 | Searches the web for current info |
+| 📅 | Creates and reads Google Calendar events |
+| 📞 | Makes phone calls and books appointments |
+| 💪 | Tracks workouts and fitness progress |
+| 🎙️ | Understands voice messages |
+| 🧠 | Remembers your contacts, habits and goals |
 
 ---
 
@@ -48,107 +72,65 @@ MILO:  "Tried twice. They're not picking up. Want me to try again later?"
 | Component | Technology |
 |---|---|
 | Runtime | Node.js + tsx |
-| Telegram Bot | Grammy |
+| Telegram | grammY |
 | LLM | Claude Haiku 4.5 |
-| Anthropic SDK | `@anthropic-ai/sdk` |
-
-### Planned
-
-| Component | Technology |
-|---|---|
-| Speech-to-Text | OpenAI Whisper API |
+| STT | OpenAI Whisper |
 | Phone calls | Vapi.ai |
-| Google Calendar | MCP server |
-| Gmail | MCP server |
-| Storage | SQLite |
-| Deploy | Docker + VPS |
+| Calendar / Gmail | MCP servers |
+| Storage | SQLite + Markdown files |
+| Deploy | Docker |
 
 ---
 
-## Architecture
+## Skills
 
-Current: Telegram → Claude Haiku → response.
-
-Planned:
+Skills are plain Markdown files that tell MILO how to behave in specific domains. Edit a file — the next message picks up the change. No redeploy needed.
 
 ```
-Telegram (text / voice)
-        ↓
-   Whisper STT          ← voice only
-        ↓
- Context Builder        ← SOUL + skill headers + summary + last 5 msgs [cached]
-        ↓
-    Router              ← Claude Haiku, 1 call, ~50 tokens output
-        ↓
-┌──────┬──────┬──────┬──────┐
-│ Cal  │Phone │Fit   │  QA  │  ← specialized agents, max 2 turns each
-└──┬───┴──┬───┴──┬───┴──┬───┘
-   │      │      │      │
-   └──────┴──────┴──────┘
-              ↓
-          Verifier       ← code check (calendar/fitness) or LLM check (phone)
-              ↓
-   Telegram response + memory update
+skills/
+├── fitness/SKILL.md      ← how to log workouts, track PRs
+├── calendar/SKILL.md     ← rules for scheduling
+└── phone/SKILL.md        ← how to handle calls
 ```
+
+---
+
+## Docs
+
+- [Architecture](docs/architecture.md) — how the system works
+- [Tools](docs/tools.md) — available tools and how to add new ones
+- [Skills](docs/skills.md) — how to write and use skills
+- [Memory](docs/memory.md) — conversation history and personal data
+- [Setup](docs/setup.md) — installation and configuration
+- [Cost](docs/cost.md) — pricing and optimization
 
 ---
 
 ## Setup
 
 ```bash
-# Install dependencies
+git clone https://github.com/yourusername/milo.git
+cd milo
+cp .env.example .env   # fill in API keys
 npm install
-
-# Configure environment
-cp .env.example .env
-# Fill in TELEGRAM_BOT_TOKEN and ANTHROPIC_API_KEY
-
-# Run in dev mode
 npm run dev
 ```
 
 ---
 
-## Roadmap
+## Status
 
-**MVP**
-- [x] Telegram bot with text input
-- [x] Claude Haiku integration with system prompt
-- [ ] Whisper STT for voice messages
-- [ ] Router agent
-- [ ] Calendar agent + MCP
-- [ ] QA agent
-- [ ] Basic memory (summary + tail-5)
-
-**v1**
-- [ ] Phone agent via Vapi
-- [ ] Verifier for calendar and phone
-- [ ] Fitness agent + MD tracking
-- [ ] Prompt caching
+- [x] Telegram bot (text + voice handlers)
+- [x] Claude Haiku integration
+- [x] SQLite message history
+- [x] Prompt caching
+- [ ] Whisper STT
+- [ ] Web search tool
+- [ ] Google Calendar tool
+- [ ] Phone calls via Vapi
+- [ ] Fitness tracking
 - [ ] Docker deploy
 
-**v2**
-- [ ] TELOS files (GOALS, MISSION, PROJECTS)
-- [ ] learned.md — MILO writes what he discovered
-- [ ] Web editor for skills
-- [ ] Proactive mode (heartbeat, reminders)
-- [ ] Voice responses via TTS
-
 ---
 
-## Design decisions
-
-**Why Raw API instead of Claude Agent SDK?**
-Full control over context, caching and token costs. Agent SDK causes context accumulation on every iteration — tested and confirmed expensive. Router + specialized agents pattern gives the same capability at lower cost.
-
-**Why Markdown files for skills/memory?**
-Human-readable and editable from anywhere. Changes apply on the next message without redeploy.
-
-**Why specialized agents instead of one big agent?**
-A calendar agent with 2 tools costs ~300 tokens. One agent with 10 tools costs ~3000 tokens on every request. Specialization is the main cost optimization.
-
----
-
-## License
-
-MIT
+MIT License

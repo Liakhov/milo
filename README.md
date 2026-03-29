@@ -97,6 +97,7 @@ skills/
 
 ## Docs
 
+- [Structure](docs/structure.md) — file structure and data flow
 - [Architecture](docs/architecture.md) — how the system works
 - [Tools](docs/tools.md) — available tools and how to add new ones
 - [Skills](docs/skills.md) — how to write and use skills

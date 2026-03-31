@@ -2,7 +2,7 @@ import initSqlJs, { Database } from "sql.js";
 import fs from "fs";
 import path from "path";
 
-const DB_DIR = path.join(import.meta.dirname, "..", "data");
+const DB_DIR = path.join(import.meta.dirname, "..", "db");
 const DB_PATH = path.join(DB_DIR, "milo.db");
 
 let db: Database;

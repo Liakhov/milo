@@ -1,13 +1,10 @@
-import {TextBlock} from "@anthropic-ai/sdk/resources";
 import 'dotenv/config';
 
 import "./env.js";
 
 import {bot, setBotHandlers} from "./bot.js";
-import {ai, MODEL} from "./ai.js";
-import {initDb, saveMessage, flush, getHistory, closeDb} from "./db.js";
-import {SYSTEM_PROMPT} from "./prompts/system.js";
 import {runAgent} from "./agent.js";
+import {closeDb, flush, getHistory, initDb, saveMessage} from "./db.js";
 
 async function onTextMessage(chatId: number, text: string) {
     try {
@@ -16,11 +13,6 @@ async function onTextMessage(chatId: number, text: string) {
 
         const reply = await runAgent(history);
 
-        const textBlock = response.content.find(
-            (block): block is TextBlock => block.type === "text"
-        );
-
-        const reply = textBlock?.text ?? "No response from AI.";
         saveMessage(chatId, "assistant", reply);
         return reply;
     } catch (error) {

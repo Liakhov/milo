@@ -7,24 +7,14 @@ import {bot, setBotHandlers} from "./bot.js";
 import {ai, MODEL} from "./ai.js";
 import {initDb, saveMessage, flush, getHistory, closeDb} from "./db.js";
 import {SYSTEM_PROMPT} from "./prompts/system.js";
+import {runAgent} from "./agent.js";
 
 async function onTextMessage(chatId: number, text: string) {
     try {
         saveMessage(chatId, "user", text);
         const history = getHistory(chatId);
 
-        const response = await ai.messages.create({
-            model: MODEL,
-            max_tokens: 1024,
-            system: [
-                {
-                    type: "text",
-                    text: SYSTEM_PROMPT,
-                    cache_control: {type: "ephemeral"},
-                },
-            ],
-            messages: history
-        });
+        const reply = await runAgent(history);
 
         const textBlock = response.content.find(
             (block): block is TextBlock => block.type === "text"

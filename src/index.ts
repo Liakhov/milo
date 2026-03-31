@@ -1,6 +1,8 @@
 import {TextBlock} from "@anthropic-ai/sdk/resources";
 import 'dotenv/config';
 
+import "./env.js";
+
 import {bot, setBotHandlers} from "./bot.js";
 import {ai, MODEL} from "./ai.js";
 import {initDb, saveMessage, flush, getHistory, closeDb} from "./db.js";

@@ -6,7 +6,7 @@ import {bot, setBotHandlers} from "./bot.js";
 import {runAgent} from "./agent.js";
 import {closeDb, flush, getHistory, initDb, saveMessage} from "./db.js";
 
-async function onTextMessage(chatId: number, text: string) {
+async function onMessage(chatId: number, text: string) {
     try {
         saveMessage(chatId, "user", text);
         const history = getHistory(chatId);
@@ -36,7 +36,7 @@ process.once("SIGTERM", shutdown);
 async function main(): Promise<void> {
     try {
         await initDb();
-        setBotHandlers(onTextMessage);
+        setBotHandlers(onMessage);
         await bot.start();
     } catch (error) {
         console.error("Error:", error);

@@ -4,9 +4,9 @@ import "./env.js";
 
 import {bot, setBotHandlers} from "./bot.js";
 import {runAgent} from "./agent.js";
-import {closeDb, flush, getHistory, initDb, saveMessage} from "./db.js";
+import {closeDb, getHistory, initDb, saveMessage} from "./db.js";
 
-async function onMessage(chatId: number, text: string) {
+async function onMessage(chatId: number, text: string): Promise<string> {
     try {
         saveMessage(chatId, "user", text);
         const history = getHistory(chatId);
@@ -18,8 +18,6 @@ async function onMessage(chatId: number, text: string) {
     } catch (error) {
         console.error("AI error:", error);
         return "Something went wrong. Try again.";
-    } finally {
-        flush();
     }
 }
 
@@ -44,4 +42,4 @@ async function main(): Promise<void> {
     }
 }
 
-main();
+await main();

@@ -18,9 +18,10 @@ export async function runAgent(history: MessageParam[]): Promise<string> {
         tools: getTools()
     });
 
-    const textBlock = response.content.find(
-      (block): block is TextBlock => block.type === 'text'
-    );
+    const text = response.content
+      .filter((block): block is TextBlock => block.type === 'text')
+      .map(block => block.text)
+      .join('');
 
-    return textBlock?.text ?? 'No response from AI.';
+    return text || 'No response from AI.';
 }

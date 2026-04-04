@@ -59,11 +59,8 @@ MILO:  "Done. Style at 11 on Friday. Added to calendar."
 |---|---|
 | 💬 | Answers questions and has conversations |
 | 🔍 | Searches the web for current info |
-| 📅 | Creates and reads Google Calendar events |
-| 📞 | Makes phone calls and books appointments |
-| 💪 | Tracks workouts and fitness progress |
 | 🎙️ | Understands voice messages |
-| 🧠 | Remembers your contacts, habits and goals |
+| 🧠 | Remembers conversation history |
 
 ---
 
@@ -74,11 +71,9 @@ MILO:  "Done. Style at 11 on Friday. Added to calendar."
 | Runtime | Node.js + tsx |
 | Telegram | grammY |
 | LLM | Claude Haiku 4.5 |
-| STT | OpenAI Whisper |
-| Phone calls | Vapi.ai |
-| Calendar / Gmail | MCP servers |
-| Storage | SQLite + Markdown files |
-| Deploy | Docker |
+| STT | gpt-4o-mini-transcribe |
+| Storage | better-sqlite3 + Markdown files |
+| Package manager | pnpm |
 
 ---
 
@@ -112,24 +107,28 @@ skills/
 ```bash
 git clone https://github.com/yourusername/milo.git
 cd milo
-cp .env.example .env   # fill in API keys
-npm install
-npm run dev
+cp .env.example .env          # fill in API keys
+cp user/SOUL.example.md user/SOUL.md  # customize personality
+pnpm install
+pnpm dev
 ```
 
 ---
 
 ## Status
 
-- [x] Telegram bot (text + voice handlers)
-- [x] Claude Haiku integration
-- [x] SQLite message history
-- [x] Prompt caching
-- [ ] Whisper STT
-- [ ] Web search tool
-- [ ] Google Calendar tool
+- [x] Telegram bot (text + voice)
+- [x] Claude Haiku 4.5 with prompt caching
+- [x] SQLite message history (better-sqlite3, WAL mode)
+- [x] Voice transcription (gpt-4o-mini-transcribe)
+- [x] Web search (Anthropic built-in tool)
+- [x] SOUL.md — external personality config
+- [ ] Skills system (auto-discovery from skills/)
+- [ ] Google Calendar integration
 - [ ] Phone calls via Vapi
-- [ ] Fitness tracking
+- [ ] Fitness tracking tools
+- [ ] Conversation summary and long-term memory
+- [ ] Verifier (result validation)
 - [ ] Docker deploy
 
 ---

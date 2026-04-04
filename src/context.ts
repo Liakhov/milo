@@ -7,7 +7,7 @@ type SystemBlock = {
     cache_control?: { type: 'ephemeral' };
 };
 
-export const buildSystemPrompt = (): SystemBlock[] => {
+export const buildSystemPrompt = (activeSkill: string | undefined): SystemBlock[] => {
     const blocks: SystemBlock[] = [];
 
     const soul = loadSoul();
@@ -15,6 +15,34 @@ export const buildSystemPrompt = (): SystemBlock[] => {
         blocks.push({ type: 'text', text: soul, cache_control: { type: 'ephemeral' } });
     }
 
+    const headers = loadSkillHeaders();
+    if (headers) {
+        blocks.push({
+            type: 'text',
+            text: `## Available skills
+
+If the user's request matches one of the skills below, respond with ONLY /skill-name and nothing else.
+Otherwise answer directly.
+
+${headers}`,
+            cache_control: { type: 'ephemeral' }
+        });
+    }
+
+    if (activeSkill) {
+        const skillContent = loadSkill(activeSkill);
+        if (skillContent) {
+            blocks.push({
+                type: 'text',
+                text: `## Instruction\nThe user's request matches the **${activeSkill}** skill. Use it now. Respond without name of the skill. Don't use Markdown headers if the response is shorter than 3 sentences`
+            });
+
+            blocks.push({
+                type: 'text',
+                text: skillContent
+            });
+        }
+    }
     return blocks;
 };
 
@@ -26,4 +54,37 @@ export const loadSoul = () => {
     if (!fs.existsSync(soulPath)) return '';
 
     return fs.readFileSync(soulPath, 'utf-8');
+};
+
+export const loadSkillHeaders = () => {
+    const skillDir = path.join(import.meta.dirname, '..', 'skills');
+    if (!fs.existsSync(skillDir)) return '';
+
+    const skills = fs.readdirSync(skillDir);
+
+    return skills.map(skill => {
+        const skillPath = path.join(skillDir, skill, 'SKILL.md');
+        if (!fs.existsSync(skillPath)) return null;
+
+        const skillContent = fs.readFileSync(skillPath, 'utf-8');
+        const match = skillContent.match(/^---\n([\s\S]*?)\n---/);
+        return match ? match[1]?.trim() : null;
+    }).filter(Boolean).join('\n\n');
+};
+
+export const detectSkill = (response: string): string | null => {
+    const match = response.match(/^\/([\w-]+)/);
+
+    return match ? (match[1] || null) : null;
+};
+
+export const loadSkill = (skillName: string) => {
+    const skillDir = path.join(import.meta.dirname, '..', 'skills');
+    if (!fs.existsSync(skillDir)) return '';
+
+    const skillsPath = path.join(skillDir, skillName, 'SKILL.md');
+
+    if (!fs.existsSync(skillsPath)) return '';
+
+    return fs.readFileSync(skillsPath, 'utf-8');
 };

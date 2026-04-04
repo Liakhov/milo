@@ -1,19 +1,13 @@
 import { MessageParam, TextBlock } from '@anthropic-ai/sdk/resources';
 import { ai, MODEL } from './ai.js';
-import { SYSTEM_PROMPT } from './prompts/system.js';
 import { getTools } from './tools/index.js';
+import { buildSystemPrompt } from './context.js';
 
 export async function runAgent(history: MessageParam[]): Promise<string> {
     const response = await ai.messages.create({
         model: MODEL,
         max_tokens: 1024,
-        system: [
-            {
-                type: 'text',
-                text: SYSTEM_PROMPT,
-                cache_control: { type: 'ephemeral' }
-            }
-        ],
+        system: buildSystemPrompt(),
         messages: history,
         tools: getTools()
     });

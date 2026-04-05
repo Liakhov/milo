@@ -5,6 +5,9 @@ import "./env.js";
 import {bot, setBotHandlers} from "./bot.js";
 import {runAgent} from "./agent.js";
 import {closeDb, getHistory, initDb, saveMessage} from "./db.js";
+import {logger} from "./logger.js";
+
+const log = logger("index");
 
 async function onMessage(chatId: number, text: string): Promise<string> {
     try {
@@ -16,13 +19,13 @@ async function onMessage(chatId: number, text: string): Promise<string> {
         saveMessage(chatId, "assistant", reply);
         return reply;
     } catch (error) {
-        console.error("AI error:", error);
+        log.error("AI error", error);
         return "Something went wrong. Try again.";
     }
 }
 
 function shutdown() {
-    console.log("Shutting down...");
+    log.info("Shutting down...");
     bot.stop();
     closeDb();
     process.exit(0);
@@ -34,10 +37,12 @@ process.once("SIGTERM", shutdown);
 async function main(): Promise<void> {
     try {
         await initDb();
+        log.info("Database initialized");
         setBotHandlers(onMessage);
         await bot.start();
+        log.info("Bot started");
     } catch (error) {
-        console.error("Error:", error);
+        log.error("Startup failed", error);
         process.exit(1);
     }
 }

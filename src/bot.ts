@@ -3,11 +3,14 @@ import {Bot} from "grammy";
 import {env} from "./env.js";
 import {stt} from "./stt.js";
 import {downloadTelegramFile} from "./telegram.js";
+import {logger} from "./logger.js";
+
+const log = logger("bot");
 
 export const bot = new Bot(env.telegramToken);
 
 bot.catch((err) => {
-    console.error("Bot error:", err.message);
+    log.error("Bot error", err);
 });
 
 type MessageHandler = (chatId: number, text: string) => Promise<string>;
@@ -35,7 +38,7 @@ export const setBotHandlers = (onMessage: MessageHandler) => {
             const reply = await onMessage(ctx.chat.id, transcript);
             await ctx.reply(reply);
         } catch (error) {
-            console.error("Voice handler error:", error);
+            log.error("Voice handler failed", error);
             await ctx.reply("Failed to process voice message. Try again.");
         }
     });

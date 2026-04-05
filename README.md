@@ -10,14 +10,15 @@ Send a text or voice message. MILO figures out what to do and does it — search
 
 ```mermaid
 flowchart TD
-    A([Telegram\ntext · voice · file]) --> B[STT — Whisper\nvoice only]
+    A([Telegram\ntext · voice]) --> B[STT — gpt-4o-mini-transcribe\nvoice only]
     B --> C[Context builder\nSOUL.md + skill headers · cached\nsummary + last 5 messages · cached]
 
     E([Skills\nSKILL.md instructions\npersonality · rules]) --> D
-    C --> D[Agent loop\nClaude Haiku 4.5\nmax 5 turns · budget cap $0.02]
-    D <-.loop.-> F([Tools\nweb_search · calendar\nvapi · gmail · fitness])
+    C --> D[Agent loop\nClaude Haiku 4.5\nmax 5 turns]
+    D <-.loop.-> F([Tools\nweb_search])
+    D <-.planned.-> F2([Planned tools\ncalendar · vapi · gmail · fitness])
 
-    D --> G[Verifier\nresult check]
+    D --> G[Verifier\nresult check\nplanned]
     G --> H[Memory update\nSQLite + MD files]
     H --> I([Telegram reply\ntext or voice])
 
@@ -27,7 +28,8 @@ flowchart TD
     style C fill:#faeeda,stroke:#854f0b,color:#633806
     style E fill:#e6f1fb,stroke:#185fa5,color:#0c447c
     style F fill:#faece7,stroke:#993c1d,color:#712b13
-    style G fill:#eaf3de,stroke:#3b6d11,color:#27500a
+    style G fill:#f5f5f5,stroke:#bbb,color:#999,stroke-dasharray: 5 5
+    style F2 fill:#f5f5f5,stroke:#bbb,color:#999,stroke-dasharray: 5 5
     style B fill:#f1efe8,stroke:#5f5e5a,color:#444441
     style H fill:#f1efe8,stroke:#5f5e5a,color:#444441
 ```
@@ -42,13 +44,12 @@ Turn 2: results received → form reply
 MILO:  "Аптека на Хрещатику 22 працює до 22:00."
 ```
 
-**Example — book a haircut:**
+**Example — exchange rate:**
 ```
-You:   "знайди перукарню і запишись на п'ятницю"
-Turn 1: web_search("перукарня поруч")
-Turn 2: make_phone_call(number, "записатись на п'ятницю")
-Turn 3: create_calendar_event("Перукарня", "Friday 11:00")
-MILO:  "Done. Style at 11 on Friday. Added to calendar."
+You:   "який курс долару?"
+Turn 1: web_search("курс USD UAH сьогодні")
+Turn 2: results received → form reply
+MILO:  "Курс USD/UAH зараз 43,56 грн за долар."
 ```
 
 ---
@@ -83,17 +84,15 @@ Skills are plain Markdown files that tell MILO how to behave in specific domains
 
 ```
 skills/
-├── fitness/SKILL.md      ← how to log workouts, track PRs
-├── calendar/SKILL.md     ← rules for scheduling
-└── phone/SKILL.md        ← how to handle calls
+└── health-buddy/SKILL.md ← wellness check-ins, mood tracking
 ```
 
 ---
 
 ## Docs
 
-- [Structure](docs/structure.md) — file structure and data flow
 - [Architecture](docs/architecture.md) — how the system works
+- [Structure](docs/structure.md) — file structure and data flow
 - [Tools](docs/tools.md) — available tools and how to add new ones
 - [Skills](docs/skills.md) — how to write and use skills
 - [Memory](docs/memory.md) — conversation history and personal data
@@ -121,9 +120,11 @@ pnpm dev
 - [x] Claude Haiku 4.5 with prompt caching
 - [x] SQLite message history (better-sqlite3, WAL mode)
 - [x] Voice transcription (gpt-4o-mini-transcribe)
-- [x] Web search (Anthropic built-in tool)
+- [x] Web search (Anthropic server tool)
 - [x] SOUL.md — external personality config
-- [ ] Skills system (auto-discovery from skills/)
+- [x] Skills system (detection + activation from skills/)
+- [x] Structured logging (JSONL daily files + colored console)
+- [ ] Chat allowlist
 - [ ] Google Calendar integration
 - [ ] Phone calls via Vapi
 - [ ] Fitness tracking tools

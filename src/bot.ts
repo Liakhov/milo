@@ -10,7 +10,7 @@ const log = logger("bot");
 export const bot = new Bot(env.telegramToken);
 
 bot.catch((err) => {
-    log.error("Bot error", err);
+    log.error("Bot error", { error: String(err.error ?? err.message) });
 });
 
 type MessageHandler = (chatId: number, text: string) => Promise<string>;
@@ -38,7 +38,8 @@ export const setBotHandlers = (onMessage: MessageHandler) => {
             const reply = await onMessage(ctx.chat.id, transcript);
             await ctx.reply(reply);
         } catch (error) {
-            log.error("Voice handler failed", error);
+            const err = error instanceof Error ? error : new Error(String(error));
+            log.error("Voice handler failed", { error: err.message });
             await ctx.reply("Failed to process voice message. Try again.");
         }
     });

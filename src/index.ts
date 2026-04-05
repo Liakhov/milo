@@ -11,15 +11,20 @@ const log = logger("index");
 
 async function onMessage(chatId: number, text: string): Promise<string> {
     try {
+        log.info("Message received", { chat_id: chatId, length: text.length, text: text.slice(0, 200) });
+
         saveMessage(chatId, "user", text);
         const history = getHistory(chatId);
 
-        const reply = await runAgent(history);
+        const reply = await runAgent(chatId, history);
 
         saveMessage(chatId, "assistant", reply);
+
+        log.info("Reply sent", { chat_id: chatId, length: reply.length, text: reply.slice(0, 200) });
         return reply;
     } catch (error) {
-        log.error("AI error", error);
+        const err = error instanceof Error ? error : new Error(String(error));
+        log.error("AI error", { chat_id: chatId, error: err.message });
         return "Something went wrong. Try again.";
     }
 }
@@ -42,7 +47,8 @@ async function main(): Promise<void> {
         await bot.start();
         log.info("Bot started");
     } catch (error) {
-        log.error("Startup failed", error);
+        const err = error instanceof Error ? error : new Error(String(error));
+        log.error("Startup failed", { error: err.message });
         process.exit(1);
     }
 }

@@ -9,5 +9,9 @@ services:
       NODE_ENV: production
     volumes:
       - db:/usr/src/app/db
+      - logs:/usr/src/app/logs
+      - ./user:/usr/src/app/user:rw
+      - ./.claude/skills:/usr/src/app/.claude/skills:ro
 volumes:
   db:
+  logs:

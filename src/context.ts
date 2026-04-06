@@ -57,19 +57,21 @@ export const loadSoul = () => {
 };
 
 export const loadSkillHeaders = () => {
-    const skillDir = path.join(import.meta.dirname, '..', 'skills');
+    const skillDir = path.join(import.meta.dirname, '..', '.claude', 'skills');
     if (!fs.existsSync(skillDir)) return '';
 
-    const skills = fs.readdirSync(skillDir);
+    return fs.readdirSync(skillDir)
+      .filter(file => fs.statSync(path.join(skillDir, file)).isDirectory())
+      .map(skill => {
+          const skillPath = path.join(skillDir, skill, 'SKILL.md');
+          if (!fs.existsSync(skillPath)) return null;
 
-    return skills.map(skill => {
-        const skillPath = path.join(skillDir, skill, 'SKILL.md');
-        if (!fs.existsSync(skillPath)) return null;
-
-        const skillContent = fs.readFileSync(skillPath, 'utf-8');
-        const match = skillContent.match(/^---\n([\s\S]*?)\n---/);
-        return match ? match[1]?.trim() : null;
-    }).filter(Boolean).join('\n\n');
+          const skillContent = fs.readFileSync(skillPath, 'utf-8');
+          const match = skillContent.match(/^---\n([\s\S]*?)\n---/);
+          return match ? match[1]?.trim() : null;
+      })
+      .filter(Boolean)
+      .join('\n\n');
 };
 
 export const detectSkill = (response: string): string | null => {
@@ -79,7 +81,7 @@ export const detectSkill = (response: string): string | null => {
 };
 
 export const loadSkill = (skillName: string) => {
-    const skillDir = path.join(import.meta.dirname, '..', 'skills');
+    const skillDir = path.join(import.meta.dirname, '..', '.claude', 'skills');
     if (!fs.existsSync(skillDir)) return '';
 
     const skillsPath = path.join(skillDir, skillName, 'SKILL.md');

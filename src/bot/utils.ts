@@ -1,5 +1,7 @@
+import { env } from '../env.js';
+
 export async function downloadTelegramFile(filePath: string): Promise<Buffer> {
-    const url = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${filePath}`;
+    const url = `https://api.telegram.org/file/bot${env.telegramToken}/${filePath}`;
     const response = await fetch(url);
 
     if (!response.ok) {

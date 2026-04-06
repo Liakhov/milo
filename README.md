@@ -67,13 +67,17 @@ MILO:  "Курс USD/UAH зараз 43,56 грн за долар."
 
 ```
 milo/
-├── src/             # TypeScript Engine (rebuilt on deploy)
+├── src/             # TypeScript engine (rebuilt on deploy)
+│   ├── bot/         # Telegram transport, middleware, access control
+│   └── tools/       # Tool registry (web_search)
 ├── .claude/         # Shared instructions for MILO & Claude Code CLI
 │   └── skills/      # Markdown skills (hot-swappable logic)
-├── user/            # Personal data (Volume mount, Git-ignored)
+├── user/            # Personal data (volume mount, git-ignored)
 │   ├── SOUL.md      # MILO's personality and core rules
 │   └── memory/      # Long-term facts, goals, and learned preferences
-└── db/              # Persistent SQLite database
+├── docs/            # Architecture, tools, skills, memory, setup, cost
+├── db/              # Persistent SQLite database
+└── logs/            # JSONL daily log files
 ```
 
 ---
@@ -111,15 +115,16 @@ pnpm dev
 - [x] Voice transcription (gpt-4o-mini-transcribe)
 - [x] Web search (Anthropic server tool)
 - [x] SOUL.md — external personality config
-- [x] Skills system (detection + activation from skills/)
+- [x] Skills system (detection + activation from .claude/skills/)
 - [x] Structured logging (JSONL daily files + colored console)
-- [ ] Chat allowlist
+- [x] Chat allowlist (ALLOWED_USER_IDS)
+- [x] Dockerfile (multi-stage build)
+- [ ] Docker Compose deploy
 - [ ] Google Calendar integration
 - [ ] Phone calls via Vapi
 - [ ] Fitness tracking tools
 - [ ] Conversation summary and long-term memory
 - [ ] Verifier (result validation)
-- [ ] Docker deploy
 
 ---
 

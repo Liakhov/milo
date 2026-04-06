@@ -51,8 +51,11 @@ FROM base as final
 # Use production node environment by default.
 ENV NODE_ENV production
 
-# Create writable db directory for the app.
+# Create writable db directory
 RUN mkdir -p /usr/src/app/db && chown -R node:node /usr/src/app
+
+# Create writable logs directory
+RUN mkdir -p /usr/src/app/logs && chown -R node:node /usr/src/app/logs
 
 # Run the application as a non-root user.
 USER node

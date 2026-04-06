@@ -1,16 +1,25 @@
-# MILO
+# 🚀 MILO: My Intelligent Life Operator
 
-**My Intelligent Life Operator** — a personal AI assistant that lives in Telegram.
-
-Send a text or voice message. MILO figures out what to do and does it — searches the web, books appointments, manages your calendar, tracks workouts. Talks like a friend: short, honest, occasionally funny.
+**MILO** is a high-performance personal AI assistant designed to function as a seamless extension of your brain. Built on the principles of **Lean AI**, MILO lives in **Telegram** and your **Terminal (via Claude Code)**, understands voice, searches the web in real-time, and manages your life through deep integrations and specialized wellness skills.
 
 ---
 
-## How it works
+## 🧠 Architectural Philosophy
+
+Unlike heavy agentic frameworks, MILO is built for speed, cost-efficiency, and absolute control:
+
+* **Single Agent Loop:** No fixed or hardcoded routing. Claude evaluates the context, selects the necessary tools, and executes steps autonomously.
+* **Tiered Prompt Caching:** Reduces token costs by up to 90% by intelligently caching the system "Soul," skill headers, and conversation history.
+* **Hybrid Memory:** Combines the speed of **SQLite** for message history with the transparency of **Markdown** files for long-term personality and user data.
+* **No-Redeploy Skills:** Instructions are decoupled from the engine. Edit a Markdown file in your vault, and MILO’s behavior updates instantly across all interfaces.
+
+---
+
+## 🏗️ How it works
 
 ```mermaid
 flowchart TD
-    A([Telegram\ntext · voice]) --> B[STT — gpt-4o-mini-transcribe\nvoice only]
+    A([Telegram / CLI\ntext · voice]) --> B[STT — gpt-4o-mini-transcribe\nvoice only]
     B --> C[Context builder\nSOUL.md + skill headers · cached\nsummary + last 5 messages · cached]
 
     E([Skills\nSKILL.md instructions\npersonality · rules]) --> D
@@ -54,37 +63,17 @@ MILO:  "Курс USD/UAH зараз 43,56 грн за долар."
 
 ---
 
-## What it does
-
-| | |
-|---|---|
-| 💬 | Answers questions and has conversations |
-| 🔍 | Searches the web for current info |
-| 🎙️ | Understands voice messages |
-| 🧠 | Remembers conversation history |
-
----
-
-## Stack
-
-| Component | Technology |
-|---|---|
-| Runtime | Node.js + tsx |
-| Telegram | grammY |
-| LLM | Claude Haiku 4.5 |
-| STT | gpt-4o-mini-transcribe |
-| Storage | better-sqlite3 + Markdown files |
-| Package manager | pnpm |
-
----
-
-## Skills
-
-Skills are plain Markdown files that tell MILO how to behave in specific domains. Edit a file — the next message picks up the change. No redeploy needed.
+## 📁 Project Structure
 
 ```
-skills/
-└── health-buddy/SKILL.md ← wellness check-ins, mood tracking
+milo/
+├── src/             # TypeScript Engine (rebuilt on deploy)
+├── .claude/         # Shared instructions for MILO & Claude Code CLI
+│   └── skills/      # Markdown skills (hot-swappable logic)
+├── user/            # Personal data (Volume mount, Git-ignored)
+│   ├── SOUL.md      # MILO's personality and core rules
+│   └── memory/      # Long-term facts, goals, and learned preferences
+└── db/              # Persistent SQLite database
 ```
 
 ---

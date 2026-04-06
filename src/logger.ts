@@ -73,8 +73,8 @@ function writeToFile(line: string): void {
             fs.mkdirSync(logsDir, { recursive: true });
         }
         fs.appendFileSync(getLogFilePath(), line + '\n');
-    } catch {
-        // silent fail — don't break the app because of logging
+    } catch (err) {
+        console.error('Failed to write to log file:', err);
     }
 }
 

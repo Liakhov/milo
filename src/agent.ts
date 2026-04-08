@@ -6,22 +6,23 @@ import { logger } from './logger.js';
 
 const log = logger('agent');
 
-const MAX_TURNS = 5;
+const MAX_TURNS = 10;
+const MAX_TOKENS = 4096;
 
 export async function runAgent(chatId: number, history: MessageParam[]): Promise<string> {
     let activeSkill: string | undefined;
     let turns = 0;
+    const messages: MessageParam[] = structuredClone(history);
 
     while (turns < MAX_TURNS) {
         turns++;
-        log.debug(`Turn ${turns}/${MAX_TURNS}`, { chat_id: chatId, activeSkill, messages: history.length });
 
         try {
             const response = await ai.messages.create({
                 model: MODEL,
-                max_tokens: 1024,
+                max_tokens: MAX_TOKENS,
                 system: buildSystemPrompt(activeSkill),
-                messages: history,
+                messages,
                 tools: getTools()
             });
 

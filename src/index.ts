@@ -20,7 +20,7 @@ async function onMessage(chatId: number, text: string): Promise<string> {
 
         saveMessage(chatId, 'assistant', reply);
 
-        log.info('Reply sent', { chat_id: chatId, length: reply.length, text: reply.slice(0, 200) });
+        log.info('Reply sent', { chat_id: chatId, length: reply.length });
         return reply;
     } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));

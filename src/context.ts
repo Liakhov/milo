@@ -7,6 +7,8 @@ type SystemBlock = {
     cache_control?: { type: 'ephemeral' };
 };
 
+let cachedSkills: string[] | null = null;
+
 export const buildSystemPrompt = (activeSkill: string | undefined): SystemBlock[] => {
     const blocks: SystemBlock[] = [];
 
@@ -81,9 +83,13 @@ export const loadSkillHeaders = () => {
 };
 
 export const detectSkill = (response: string): string | null => {
-    const match = response.match(/^\/([\w-]+)/);
+    const skills = getSkills();
 
-    return match ? (match[1] || null) : null;
+    for (const skill of skills) {
+        if (response.includes(`/${skill}`)) return skill;
+    }
+
+    return null;
 };
 
 export const loadSkill = (skillName: string) => {
@@ -95,4 +101,17 @@ export const loadSkill = (skillName: string) => {
     if (!fs.existsSync(skillsPath)) return '';
 
     return fs.readFileSync(skillsPath, 'utf-8');
+};
+
+
+const getSkills = (): string[] => {
+    if (cachedSkills) return cachedSkills;
+
+    const skillDir = path.join(import.meta.dirname, '..', '.claude', 'skills');
+    if (!fs.existsSync(skillDir)) return [];
+
+    cachedSkills = fs.readdirSync(skillDir)
+      .filter(file => fs.statSync(path.join(skillDir, file)).isDirectory());
+
+    return cachedSkills;
 };

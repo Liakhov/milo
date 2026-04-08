@@ -15,6 +15,12 @@ export const buildSystemPrompt = (activeSkill: string | undefined): SystemBlock[
         blocks.push({ type: 'text', text: soul, cache_control: { type: 'ephemeral' } });
     }
 
+    blocks.push({
+        type: 'text',
+        text: `Current date: ${new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Kyiv' })} (Europe/Kyiv)`,
+        cache_control: { type: 'ephemeral' }
+    });
+
     const headers = loadSkillHeaders();
     if (headers) {
         blocks.push({

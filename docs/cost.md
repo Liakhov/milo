@@ -1,48 +1,47 @@
 # Cost
 
-## Per request
+## Model
+
+Claude Haiku 4.5 — $0.25/$1.25 per 1M input/output tokens.
+
+## Real usage (from logs, Apr 5–11 2026)
 
 ```
-Agent loop (3 turns avg):    ~900 input + 200 output  = $0.00047
-Verifier (if needed):        ~200 input + 30 output   = $0.00006
-Whisper (voice only):        ~0.2 min                 = $0.00120
-─────────────────────────────────────────────────────────────────
-With voice:                                           ≈ $0.0018
-Text only:                                            ≈ $0.0005
+Average per request:     ~4,500 input + ~150 output tokens
+Average per conversation: 2-3 API calls (skill activation + tool use + reply)
+Average daily cost:       ~$0.024 (at ~19 API calls/day)
 ```
 
-At 100 requests/day → **~$1–5/month** on LLM.
+### Per request breakdown
 
-Phone calls via Vapi are billed separately at $0.05–0.10/min.
+| Type | Input | Output | Cost |
+|------|-------|--------|------|
+| Simple reply (1 turn) | ~3,500 | ~20 | ~$0.001 |
+| With skill (2-3 turns) | ~12,000 | ~300 | ~$0.004 |
+| Skill + tool use (3-4 turns) | ~18,000 | ~500 | ~$0.005 |
+| Whisper (voice only) | — | — | ~$0.0012 |
 
 ## Prompt caching
 
-Parts of context that don't change often are cached — you pay 10% of normal cost on repeated requests.
+**Status: NOT WORKING.** All logged requests show `cache_hit: 0`. SOUL.md and skill headers are re-read on every call at full price.
 
 ```
-SOUL.md (~300 tokens)         cached → $0.000008 instead of $0.000075
-Skill headers (~100 tokens)   cached → $0.000003 instead of $0.000025
-Summary (~200 tokens)         cached → $0.000005 instead of $0.000050
+Expected:  SOUL.md, skill headers cached → 90% savings on ~3,500 tokens
+Actual:    cache_hit = 0 across all requests
 ```
 
-Caching saves ~70% on input tokens across a conversation.
+Fixing caching would save ~$0.005-0.01/day at current usage.
 
-## Model choice
+## Limits
 
-Claude Haiku 4.5 — $0.25/$1.25 per 1M tokens.
+Each request is limited to `max_turns = 10`. If the agent doesn't finish in time, it returns an error instead of running indefinitely.
 
-For routing and single-domain tasks, Haiku matches Sonnet in quality at 12x lower cost. The most expensive part of the system is phone calls, not the LLM.
+## Monthly estimate (based on real data)
 
-## Budget cap
-
-Each request is limited to `max_turns = 5` and `max_budget_usd = 0.02`. If the agent doesn't finish in time, it returns an honest error instead of running indefinitely.
-
-## Monthly estimate
-
-| Usage | LLM cost | Calls cost | Total |
-|---|---|---|---|
-| Light (50 req/day) | ~$0.75 | ~$1 | ~$2 |
-| Normal (100 req/day) | ~$1.50 | ~$2 | ~$4 |
-| Heavy (200 req/day) | ~$3.00 | ~$5 | ~$8 |
+| Usage | Daily cost | Monthly |
+|---|---|---|
+| Light (~10 req/day) | ~$0.01 | ~$0.30 |
+| Normal (~20 req/day) | ~$0.025 | ~$0.75 |
+| Heavy (~40 req/day) | ~$0.05 | ~$1.50 |
 
 VPS hosting adds ~$5/month on top.

@@ -23,7 +23,7 @@ Detect mode by intent, not exact keywords. Triggers below are examples in any la
     - *Fact Type:* Soothing biological facts about the nervous system.
 
 2. **RECOVERY MODE (Tired/Routine Break):**
-    - *Triggers:* "break", "tired", "eyes hurt", "stiff", "stagnant", "fatigue", "втомився", "очі болять", "затекло", "перерва".
+    - *Triggers:* "eyes hurt", "stiff", "stagnant", "fatigue", "втомився", "очі болять", "затекло", "перерва".
     - *Focus:* Performance optimization through physical movement, hydration, or eye care.
     - *Fact Type:* Facts about productivity, brain oxygenation, or bio-hacking.
 

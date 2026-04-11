@@ -4,100 +4,68 @@
 milo/
 │
 ├── src/                          TypeScript source code
-│   ├── index.ts                  Entry point. Initializes bot, validates env,
-│   │                             handles incoming messages, orchestrates the pipeline.
+│   ├── index.ts                  Entry point. Validates env, handles messages,
+│   │                             orchestrates the pipeline.
 │   │
-│   ├── bot.ts                    Telegram transport only. Receives messages,
-│   │                             parses type (text/voice/photo/document),
-│   │                             passes structured object to index.ts.
+│   ├── bot/
+│   │   ├── index.ts              Telegram transport. Receives messages,
+│   │   │                         parses type (text/voice/photo/document).
+│   │   ├── middleware.ts         Access control, rate limiting.
+│   │   └── utils.ts              Message parsing helpers.
 │   │
-│   ├── ai.ts                     Anthropic client singleton.
-│   │                             Single instance used across the entire app.
+│   ├── ai.ts                    Anthropic client singleton.
 │   │
-│   ├── context.ts                Builds the full context before each API call.
-│   │                             Loads SOUL.md, skill headers, conversation summary,
-│   │                             last 5 messages. Applies prompt caching.
-│   │                             Parses SKILL.md file references and loads user data.
+│   ├── context.ts               Builds the full context before each API call.
+│   │                            Loads SOUL.md, skill headers, conversation history.
+│   │                            Applies prompt caching.
 │   │
-│   ├── agent.ts                  Agent loop. Sends context + tools to Claude,
-│   │                             handles tool calls, executes them, feeds results back.
-│   │                             Enforces max_turns and budget cap.
+│   ├── agent.ts                 Agent loop. Sends context + tools to Claude,
+│   │                            handles tool_use (custom) and server_tool_use (built-in),
+│   │                            feeds results back. Enforces max_turns.
 │   │
-│   ├── verifier.ts               Verifies results after agent finishes.
-│   │                             calendar → checks event exists in Google API
-│   │                             phone    → LLM reads transcript
-│   │                             search   → checks response has answer
-│   │                             qa       → skips verification
+│   ├── db.ts                    SQLite database (better-sqlite3, WAL mode).
 │   │
-│   ├── memory.ts                 All read/write operations for SQLite and MD files.
-│   │                             Saves messages, loads history, updates summary,
-│   │                             reads and writes user/memory/ files.
+│   ├── env.ts                   Environment variable validation and access.
 │   │
-│   ├── stt.ts                    Whisper integration. Downloads voice file from
-│   │                             Telegram, converts .ogg → .mp3, sends to OpenAI,
-│   │                             returns transcript text.
+│   ├── logger.ts                Structured logging (JSONL daily files + console).
+│   │
+│   ├── stt.ts                   Whisper integration. Downloads voice from Telegram,
+│   │                            converts .ogg → .mp3, returns transcript.
 │   │
 │   └── tools/
-│       ├── index.ts              Tool registry. Exports definitions array for Claude
-│       │                         and execute() dispatcher for tool calls.
+│       ├── index.ts             Tool registry. Exports definitions for Claude
+│       │                        and executeTool() dispatcher.
 │       │
-│       ├── search.ts             web_search — Brave/Serper API
-│       ├── calendar.ts           get_calendar_events, create_calendar_event
-│       ├── phone.ts              make_phone_call — Vapi.ai
-│       ├── fitness.ts            log_workout, get_fitness_progress
-│       └── email.ts              send_email — Gmail MCP
+│       └── data.ts              read_data + write_data — generic file tools
+│                                scoped to user/memory/.
 │
-├── skills/                       Markdown files — Docker volume mount
-│   │                             Edit without redeploy. Loaded at request time.
-│   │
-│   ├── fitness/
-│   │   ├── SKILL.md              Instructions, rules, file references
-│   │   └── workflows/
-│   │       ├── log-workout.md
-│   │       ├── check-progress.md
-│   │       └── set-goals.md
-│   │
-│   ├── calendar/
-│   │   ├── SKILL.md
-│   │   └── workflows/
-│   │       ├── create-event.md
-│   │       └── check-schedule.md
-│   │
-│   └── phone/
-│       ├── SKILL.md
-│       └── workflows/
-│           └── make-appointment.md
+├── .claude/
+│   └── skills/                  Markdown skill files (hot-swappable logic).
+│       ├── fitness-planner/     Training program creation.
+│       ├── fitness-reader/      Workout analysis and progress review.
+│       ├── fitness-writer/      Workout logging and PR tracking.
+│       └── health-buddy/       Well-being nudges (burnout, fatigue).
 │
-├── user/                         Personal data — Docker volume mount
-│   │                             Never committed to git. Never overwritten on deploy.
-│   │
-│   ├── SOUL.md                   MILO's personality, rules, timezone, user name
-│   │
-│   ├── telos/
-│   │   ├── GOALS.md              Current life goals
-│   │   └── PROJECTS.md           Active projects
-│   │
+├── user/                        Personal data (volume mount, git-ignored).
+│   ├── SOUL.md                  MILO's personality, rules, timezone, user name.
 │   └── memory/
-│       ├── MEMORY.md             Contacts, preferences, general facts
-│       ├── summary.md            Auto-updated conversation summary
-│       ├── learned.md            Things MILO discovered over time
 │       └── fitness/
-│           ├── profile.md        Body stats, 1RM, schedule, injuries
-│           ├── workouts.md       Workout log
-│           ├── progress.md       Current results and PRs
-│           └── goals.md          Fitness goals
+│           ├── profile.md       Body stats, injuries, goals, PRs.
+│           ├── program.md       Current training plan.
+│           ├── workouts.md      Workout log (append-only).
+│           └── weight.md        Body weight log (append-only).
 │
-├── docs/                         Documentation
+├── docs/                        Documentation
 │   ├── architecture.md
 │   ├── tools.md
 │   ├── skills.md
 │   ├── memory.md
 │   ├── setup.md
 │   ├── cost.md
-│   └── structure.md              ← this file
+│   └── structure.md             ← this file
 │
-├── .env.example                  Environment variable template
-├── .gitignore                    Excludes user/, .env, node_modules
+├── .env.example
+├── .gitignore
 ├── docker-compose.yml
 ├── Dockerfile
 ├── package.json
@@ -108,21 +76,29 @@ milo/
 ## Key separation
 
 ```
-src/      code — rebuilt on deploy
-skills/   agent instructions — edited live, no redeploy
-user/     personal data — never touched by deploys
+src/           code — rebuilt on deploy
+.claude/skills agent instructions — edited live, no redeploy
+user/          personal data — never touched by deploys
 ```
 
-## Data flow between files
+## Tools architecture
+
+Two generic tools, both scoped to `user/memory/`:
+- `read_data` — reads any file by path
+- `write_data` — writes/appends to any file by path
+- `web_search` — Anthropic server tool (executed server-side)
+
+Custom tools are executed locally in the agent loop. Server tools (web_search) are handled by Anthropic automatically.
+
+## Data flow
 
 ```
 index.ts
-  → bot.ts         parse incoming message
-  → stt.ts         transcribe if voice
-  → context.ts     build prompt (reads SOUL.md, skills/, memory/)
-  → agent.ts       run Claude with tools
-      → tools/*    execute tool calls
-  → verifier.ts    check result
-  → memory.ts      save to SQLite + update MD files
-  → bot.ts         send reply
+  → bot/          parse incoming message
+  → stt.ts        transcribe if voice
+  → context.ts    build prompt (reads SOUL.md, skills/, history)
+  → agent.ts      run Claude with tools
+      → tools/*   execute custom tool calls
+  → db.ts         save to SQLite
+  → bot/          send reply
 ```

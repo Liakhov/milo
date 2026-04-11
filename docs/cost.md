@@ -19,7 +19,7 @@ Average daily cost:       ~$0.024 (at ~19 API calls/day)
 | Simple reply (1 turn) | ~3,500 | ~20 | ~$0.001 |
 | With skill (2-3 turns) | ~12,000 | ~300 | ~$0.004 |
 | Skill + tool use (3-4 turns) | ~18,000 | ~500 | ~$0.005 |
-| Whisper (voice only) | — | — | ~$0.0012 |
+| STT (voice only) | — | — | ~$0.0012 |
 
 ## Prompt caching
 

@@ -1,6 +1,6 @@
 # MILO — My Intelligent Life Operator
 
-Personal AI assistant in Telegram. One agent loop — Claude picks tools, executes steps, replies when done.
+Personal AI assistant with two interfaces: **Telegram bot** and **Claude Code CLI**. Same codebase, shared `user/` data and `.claude/skills/`. One agent loop — Claude picks tools, executes steps, replies when done.
 
 @README.md
 @docs/architecture.md

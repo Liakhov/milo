@@ -29,7 +29,7 @@ milo/
 │   │
 │   ├── logger.ts                Structured logging (JSONL daily files + console).
 │   │
-│   ├── stt.ts                   Whisper integration. Downloads voice from Telegram,
+│   ├── stt.ts                   STT via gpt-4o-mini-transcribe. Downloads voice from Telegram,
 │   │                            converts .ogg → .mp3, returns transcript.
 │   │
 │   └── tools/

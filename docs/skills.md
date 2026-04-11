@@ -1,70 +1,70 @@
 # Skills
 
-Skills are Markdown files that tell MILO how to behave in specific domains. They contain instructions, rules, and references to user data — not code.
+Skills are Markdown files that tell MILO how to behave in specific domains. They contain instructions and rules — not code.
 
 ## How skills work
 
-Claude learns about available skills through their frontmatter (Tier 1). When a request matches a skill's description, the full skill file is loaded into context along with any referenced user data files.
+1. On every request, `context.ts` loads skill frontmatter (name + description) into the system prompt.
+2. Claude reads the user's message and decides if a skill is needed.
+3. If yes, Claude outputs the skill name (e.g. `/fitness-planner`), which `agent.ts` detects.
+4. On the next turn, the full SKILL.md is loaded into context.
+5. Claude follows the skill's instructions, calling tools as needed.
 
 ```
-Tier 0  SOUL.md              always loaded [cached]
-Tier 1  skill frontmatter    name + description [cached, ~20 tokens each]
-Tier 2  full SKILL.md        loaded when skill is relevant
-Tier 3  workflow .md         loaded for specific step-by-step tasks
+Tier 0  SOUL.md              always loaded
+Tier 1  skill frontmatter    name + description (loaded on every request)
+Tier 2  full SKILL.md        loaded when skill is activated
 ```
-
-No bash, no Agent SDK. `context.ts` reads the files and passes content to Claude as plain text.
 
 ## File structure
 
 ```
-skills/
-└── fitness/
-    ├── SKILL.md
-    └── workflows/
-        ├── log-workout.md
-        └── check-progress.md
+.claude/skills/
+├── fitness-planner/
+│   └── SKILL.md
+├── fitness-reader/
+│   └── SKILL.md
+├── fitness-writer/
+│   └── SKILL.md
+└── health-buddy/
+    └── SKILL.md
 ```
 
 ## SKILL.md format
 
 ```markdown
 ---
-name: fitness-tracker
-description: Track workouts, PRs, body measurements and fitness progress.
-  Use when user mentions: training, workout, gym, exercise, PR, sets, reps.
-version: 1.0.0
+name: fitness-writer
+description:
+    Logs workouts and updates fitness data.
+    Triggers when user reports training — exercises, sets, reps, weights.
+    Examples: "запиши тренування", "I did legs today", "жим 80кг 3x8"
 ---
 
-## Before every response — read these files
-- user/memory/fitness/profile.md
-- user/memory/fitness/goals.md
+# Fitness Writer
+
+You help the user log workouts and update fitness records.
+
+## Steps
+
+1. Call `read_data` for relevant files.
+2. Process the user's input.
+3. Call `write_data` to save results.
+4. Confirm what was done.
 
 ## Rules
-- Always compare with previous session
-- Mark new PRs with a trophy emoji
-- Suggest rest after 3+ consecutive training days
 
-## Routing
-| Intent          | Workflow              |
-|-----------------|-----------------------|
-| log workout     | log-workout.md        |
-| check progress  | check-progress.md     |
-| set goal        | set-goals.md          |
+- Always use today's date.
+- Never overwrite workouts.md — always append.
 ```
 
-## User data references
-
-Skills can reference personal data files in `user/memory/`. `context.ts` parses these references and loads the files automatically — Claude sees skill instructions and personal data as one block.
-
-```
-## Before every response — read these files
-- user/memory/fitness/profile.md   ← body stats, 1RM, schedule
-- user/memory/fitness/goals.md     ← current targets
-```
+Key points:
+- **Frontmatter** `name` and `description` are used for skill detection — keep descriptions clear with trigger examples.
+- **Steps** tell the model what tools to call and in what order.
+- **Rules** constrain behavior (e.g. append vs overwrite).
 
 ## Editing skills
 
-Skills live in `skills/` which is a Docker volume mount. Edit any file — the next message picks up the change. No redeploy needed.
+Skills live in `.claude/skills/`. Edit any SKILL.md — the next message picks up the change. No redeploy needed.
 
-To add a new skill: create a folder with a `SKILL.md` file. MILO will discover it automatically on next request.
+To add a new skill: create a folder with a `SKILL.md` file under `.claude/skills/`. MILO discovers it automatically on next request.

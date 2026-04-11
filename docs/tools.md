@@ -1,73 +1,55 @@
 # Tools
 
-Tools are TypeScript functions that Claude can call during the agent loop. Each tool has a name, description, and input schema. Claude decides which tools to use based on the user's request.
+Tools are functions that Claude can call during the agent loop. There are two types: custom tools (executed locally) and server tools (executed by Anthropic).
 
 ## Available tools
 
-### web_search
-Search the web for current information.
+### web_search (server tool)
+Search the web for current information. Executed server-side by Anthropic — no local handling needed.
 
-```typescript
-input:  { query: string }
-output: { results: { title, url, snippet }[] }
+```
+Max uses per request: 5
 ```
 
-Use cases: pharmacy hours, restaurant info, current prices, news.
-
-### get_calendar_events
-Read events from Google Calendar.
+### read_data (custom tool)
+Read a file from `user/memory/`.
 
 ```typescript
-input:  { date_range: string }  // e.g. "today", "this week", "2026-03-28"
-output: { events: { title, start, end, location }[] }
+input:  { path: string }  // e.g. "memory/fitness/workouts.md"
+output: string             // file contents or "(empty)"
 ```
 
-### create_calendar_event
-Create a new event in Google Calendar.
+### write_data (custom tool)
+Write or append content to a file under `user/memory/`.
 
 ```typescript
-input:  { title: string, datetime: string, duration_min: number, location?: string }
-output: { event_id: string, url: string }
+input:  { path: string, content: string, mode: "overwrite" | "append" }
+output: string  // success message or error
 ```
 
-### make_phone_call
-Make an outbound call via Vapi. Returns transcript when call ends.
-
-```typescript
-input:  { phone: string, goal: string }
-output: { transcript: string, success: boolean, summary: string }
-```
-
-### log_workout
-Save a workout session to the fitness log.
-
-```typescript
-input:  { exercises: { name, sets, reps, weight }[], notes?: string }
-output: { saved: boolean, pr_detected: boolean }
-```
-
-### send_email
-Send an email via Gmail MCP.
-
-```typescript
-input:  { to: string, subject: string, body: string }
-output: { message_id: string }
-```
+Path is validated — writes outside `user/memory/` are blocked.
 
 ## Adding a new tool
 
-1. Create `src/tools/your-tool.ts`
-2. Export a `definition` (name, description, input schema) and `execute` function
-3. Register in `src/tools/index.ts`
+1. Add logic to `src/tools/data.ts` (or create a new file)
+2. Add tool definition in `src/tools/index.ts` (name, description, input schema)
+3. Add case to `executeTool()` switch in `src/tools/index.ts`
 
-Claude will automatically know about it on next restart.
+Claude will see the new tool on next restart.
 
 ## Tool execution flow
 
 ```
-Claude decides to call web_search({ query: "pharmacy hours" })
-  → src/tools/search.ts execute()
-  → returns results
-  → Claude reads results, decides next step
-  → continues loop or forms reply
+Custom tool:
+  Claude returns stop_reason: "tool_use"
+  → agent.ts calls executeTool(name, input)
+  → tool returns result string
+  → result sent back as tool_result message
+  → Claude continues loop
+
+Server tool (web_search):
+  Claude returns stop_reason with server_tool_use
+  → executed by Anthropic automatically
+  → results included in next response
+  → no local handling needed
 ```

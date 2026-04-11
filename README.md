@@ -1,6 +1,6 @@
 # 🚀 MILO: My Intelligent Life Operator
 
-**MILO** is a high-performance personal AI assistant designed to function as a seamless extension of your brain. Built on the principles of **Lean AI**, MILO lives in **Telegram** and your **Terminal (via Claude Code)**, understands voice, searches the web in real-time, and manages your life through deep integrations and specialized wellness skills.
+**MILO** is a personal AI assistant that lives in **Telegram** and your **Terminal (via Claude Code)**. It understands voice, searches the web in real-time, and tracks your fitness through hot-swappable Markdown skills.
 
 ---
 
@@ -9,7 +9,7 @@
 Unlike heavy agentic frameworks, MILO is built for speed, cost-efficiency, and absolute control:
 
 * **Single Agent Loop:** No fixed or hardcoded routing. Claude evaluates the context, selects the necessary tools, and executes steps autonomously.
-* **Tiered Prompt Caching:** Reduces token costs by up to 90% by intelligently caching the system "Soul," skill headers, and conversation history.
+* **Prompt Caching:** System prompt (SOUL.md, skill headers) is marked for caching to reduce repeated token costs.
 * **Hybrid Memory:** Combines the speed of **SQLite** for message history with the transparency of **Markdown** files for long-term personality and user data.
 * **No-Redeploy Skills:** Instructions are decoupled from the engine. Edit a Markdown file in your vault, and MILO’s behavior updates instantly across all interfaces.
 
@@ -20,15 +20,13 @@ Unlike heavy agentic frameworks, MILO is built for speed, cost-efficiency, and a
 ```mermaid
 flowchart TD
     A([Telegram / CLI\ntext · voice]) --> B[STT — gpt-4o-mini-transcribe\nvoice only]
-    B --> C[Context builder\nSOUL.md + skill headers · cached\nsummary + last 5 messages · cached]
+    B --> C[Context builder\nSOUL.md + skill headers\nconversation history]
 
     E([Skills\nSKILL.md instructions\npersonality · rules]) --> D
-    C --> D[Agent loop\nClaude Haiku 4.5\nmax 5 turns]
-    D <-.loop.-> F([Tools\nweb_search])
-    D <-.planned.-> F2([Planned tools\ncalendar · vapi · gmail · fitness])
+    C --> D[Agent loop\nClaude Haiku 4.5\nmax 10 turns]
+    D <-.loop.-> F([Tools\nweb_search · read_data · write_data])
 
-    D --> G[Verifier\nresult check\nplanned]
-    G --> H[Memory update\nSQLite + MD files]
+    D --> H[Save + Reply\nSQLite + MD files]
     H --> I([Telegram reply\ntext or voice])
 
     style A fill:#d1f5ea,stroke:#0f6e56,color:#085041
@@ -37,8 +35,6 @@ flowchart TD
     style C fill:#faeeda,stroke:#854f0b,color:#633806
     style E fill:#e6f1fb,stroke:#185fa5,color:#0c447c
     style F fill:#faece7,stroke:#993c1d,color:#712b13
-    style G fill:#f5f5f5,stroke:#bbb,color:#999,stroke-dasharray: 5 5
-    style F2 fill:#f5f5f5,stroke:#bbb,color:#999,stroke-dasharray: 5 5
     style B fill:#f1efe8,stroke:#5f5e5a,color:#444441
     style H fill:#f1efe8,stroke:#5f5e5a,color:#444441
 ```
@@ -69,7 +65,7 @@ MILO:  "Курс USD/UAH зараз 43,56 грн за долар."
 milo/
 ├── src/             # TypeScript engine (rebuilt on deploy)
 │   ├── bot/         # Telegram transport, middleware, access control
-│   └── tools/       # Tool registry (web_search)
+│   └── tools/       # Tool registry (web_search, read_data, write_data)
 ├── .claude/         # Shared instructions for MILO & Claude Code CLI
 │   └── skills/      # Markdown skills (hot-swappable logic)
 ├── user/            # Personal data (volume mount, git-ignored)
@@ -97,7 +93,7 @@ milo/
 ## Setup
 
 ```bash
-git clone https://github.com/yourusername/milo.git
+git clone https://github.com/Liakhov/milo.git
 cd milo
 cp .env.example .env          # fill in API keys
 cp user/SOUL.example.md user/SOUL.md  # customize personality
@@ -110,7 +106,7 @@ pnpm dev
 ## Status
 
 - [x] Telegram bot (text + voice)
-- [x] Claude Haiku 4.5 with prompt caching
+- [x] Claude Haiku 4.5
 - [x] SQLite message history (better-sqlite3, WAL mode)
 - [x] Voice transcription (gpt-4o-mini-transcribe)
 - [x] Web search (Anthropic server tool)
@@ -119,12 +115,10 @@ pnpm dev
 - [x] Structured logging (JSONL daily files + colored console)
 - [x] Chat allowlist (ALLOWED_USER_IDS)
 - [x] Dockerfile (multi-stage build)
-- [ ] Docker Compose deploy
-- [ ] Google Calendar integration
-- [ ] Phone calls via Vapi
-- [ ] Fitness tracking tools
+- [x] Fitness tracking (read_data/write_data + fitness skills)
+- [x] Two modes: Telegram bot + Claude Code CLI with shared data
+- [ ] Prompt caching optimization
 - [ ] Conversation summary and long-term memory
-- [ ] Verifier (result validation)
 
 ---
 

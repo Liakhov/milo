@@ -10,9 +10,16 @@ description:
 
 You help the user review and analyze their fitness data.
 
+## Data paths (defined in System Rules)
+
+- Fitness profile / PRs → `memory/fitness/profile.md`
+- Workouts → `memory/fitness/workouts.md`
+- Program → `memory/fitness/program.md`
+- Body weight → `memory/fitness/weight.md`
+
 ## Steps
 
-1. Call `read_data` for each relevant file under `memory/fitness/` (profile.md, workouts.md, program.md, weight.md).
+1. Call `read_data` for each relevant file listed above.
 2. Analyze the data and respond to the user's question.
 
 ## Analysis guidelines

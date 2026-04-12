@@ -17,6 +17,11 @@ export const buildSystemPrompt = (activeSkill: string | undefined): SystemBlock[
         blocks.push({ type: 'text', text: soul, cache_control: { type: 'ephemeral' } });
     }
 
+    const system = loadSystem();
+    if (system) {
+        blocks.push({ type: 'text', text: system, cache_control: { type: 'ephemeral' } });
+    }
+
     blocks.push({
         type: 'text',
         text: `Current date: ${new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Kyiv' })} (Europe/Kyiv)`,
@@ -62,6 +67,15 @@ export const loadSoul = () => {
     if (!fs.existsSync(soulPath)) return '';
 
     return fs.readFileSync(soulPath, 'utf-8');
+};
+
+export const loadSystem = () => {
+    const userDir = path.join(import.meta.dirname, '..', 'user');
+    const systemPath = path.join(userDir, 'SYSTEM.md');
+
+    if (!fs.existsSync(systemPath)) return '';
+
+    return fs.readFileSync(systemPath, 'utf-8');
 };
 
 export const loadSkillHeaders = () => {

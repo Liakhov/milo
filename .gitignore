@@ -4,5 +4,4 @@ dist
 db
 logs
 .env
-user/*
-!user/SOUL.example.md
+user/memory/*

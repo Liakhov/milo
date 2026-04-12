@@ -3,7 +3,9 @@ name: fitness-writer
 description:
     Logs workouts and updates fitness data.
     Triggers when user reports training — exercises, sets, reps, weights.
-    Examples: "запиши тренування", "I did legs today", "жим 80кг 3x8", "потренив спину"
+    Also triggers when user reports body weight or measurements.
+    Examples: "запиши тренування", "I did legs today", "жим 80кг 3x8",
+    "потренив спину", "вага 68.7", "today 70kg"
 ---
 
 # Fitness Writer
@@ -29,6 +31,12 @@ You help the user log workouts and update fitness records.
 
 Notes: any user comments
 ```
+
+## Data paths (defined in System Rules)
+
+- Workouts → `memory/fitness/workouts.md` (append)
+- Fitness profile / PRs → `memory/fitness/profile.md` (overwrite)
+- Body weight → `memory/fitness/weight.md` (append)
 
 ## Rules
 

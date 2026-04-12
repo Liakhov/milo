@@ -16,8 +16,8 @@ milo/
 │   ├── ai.ts                    Anthropic client singleton.
 │   │
 │   ├── context.ts               Builds the full context before each API call.
-│   │                            Loads SOUL.md, skill headers, conversation history.
-│   │                            Applies prompt caching.
+│   │                            Loads SOUL.md, SYSTEM.md, skill headers,
+│   │                            conversation history. Applies prompt caching.
 │   │
 │   ├── agent.ts                 Agent loop. Sends context + tools to Claude,
 │   │                            handles tool_use (custom) and server_tool_use (built-in),
@@ -46,9 +46,10 @@ milo/
 │       ├── fitness-writer/      Workout logging and PR tracking.
 │       └── health-buddy/       Well-being nudges (burnout, fatigue).
 │
-├── user/                        Personal data (volume mount, git-ignored).
-│   ├── SOUL.md                  MILO's personality, rules, timezone, user name.
-│   └── memory/
+├── user/                        Personal data (volume mount).
+│   ├── SOUL.md                  MILO's personality and style.
+│   ├── SYSTEM.md                Operational rules, tool usage, data paths.
+│   └── memory/                  User data (git-ignored).
 │       └── fitness/
 │           ├── profile.md       Body stats, injuries, goals, PRs.
 │           ├── program.md       Current training plan.
@@ -96,7 +97,7 @@ Custom tools are executed locally in the agent loop. Server tools (web_search) a
 index.ts
   → bot/          parse incoming message
   → stt.ts        transcribe if voice
-  → context.ts    build prompt (reads SOUL.md, skills/, history)
+  → context.ts    build prompt (reads SOUL.md, SYSTEM.md, skills/, history)
   → agent.ts      run Claude with tools
       → tools/*   execute custom tool calls
   → db.ts         save to SQLite

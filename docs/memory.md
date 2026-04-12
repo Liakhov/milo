@@ -18,7 +18,8 @@ Read and written by MILO via `read_data` / `write_data` tools during conversatio
 
 ```
 user/
-├── SOUL.md                  MILO's personality, rules, timezone
+├── SOUL.md                  MILO's personality and style
+├── SYSTEM.md                Operational rules, data paths, context
 └── memory/
     └── fitness/
         ├── profile.md       Body stats, injuries, goals, PRs
@@ -37,6 +38,6 @@ user/
 Parts of context that don't change often are cached with Anthropic's prompt caching (90% cost reduction on cache hits).
 
 ```
-Cached:      SOUL.md, skill headers
+Cached:      SOUL.md, SYSTEM.md, skill headers
 Not cached:  recent messages, current message
 ```

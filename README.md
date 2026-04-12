@@ -9,7 +9,7 @@
 Unlike heavy agentic frameworks, MILO is built for speed, cost-efficiency, and absolute control:
 
 * **Single Agent Loop:** No fixed or hardcoded routing. Claude evaluates the context, selects the necessary tools, and executes steps autonomously.
-* **Prompt Caching:** System prompt (SOUL.md, skill headers) is marked for caching to reduce repeated token costs.
+* **Prompt Caching:** System prompt (SOUL.md, SYSTEM.md, skill headers) is marked for caching to reduce repeated token costs.
 * **Hybrid Memory:** Combines the speed of **SQLite** for message history with the transparency of **Markdown** files for long-term personality and user data.
 * **No-Redeploy Skills:** Instructions are decoupled from the engine. Edit a Markdown file in your vault, and MILO’s behavior updates instantly across all interfaces.
 
@@ -20,7 +20,7 @@ Unlike heavy agentic frameworks, MILO is built for speed, cost-efficiency, and a
 ```mermaid
 flowchart TD
     A([Telegram / CLI\ntext · voice]) --> B[STT — gpt-4o-mini-transcribe\nvoice only]
-    B --> C[Context builder\nSOUL.md + skill headers\nconversation history]
+    B --> C[Context builder\nSOUL.md + SYSTEM.md\nskill headers + history]
 
     E([Skills\nSKILL.md instructions\npersonality · rules]) --> D
     C --> D[Agent loop\nClaude Haiku 4.5\nmax 10 turns]
@@ -68,9 +68,10 @@ milo/
 │   └── tools/       # Tool registry (web_search, read_data, write_data)
 ├── .claude/         # Shared instructions for MILO & Claude Code CLI
 │   └── skills/      # Markdown skills (hot-swappable logic)
-├── user/            # Personal data (volume mount, git-ignored)
-│   ├── SOUL.md      # MILO's personality and core rules
-│   └── memory/      # Long-term facts, goals, and learned preferences
+├── user/            # Personal data (volume mount)
+│   ├── SOUL.md      # MILO's personality and style
+│   ├── SYSTEM.md    # Operational rules, data paths, context
+│   └── memory/      # Long-term facts, goals, and learned preferences (git-ignored)
 ├── docs/            # Architecture, tools, skills, memory, setup, cost
 ├── db/              # Persistent SQLite database
 └── logs/            # JSONL daily log files
@@ -96,7 +97,7 @@ milo/
 git clone https://github.com/Liakhov/milo.git
 cd milo
 cp .env.example .env          # fill in API keys
-cp user/SOUL.example.md user/SOUL.md  # customize personality
+# edit user/SOUL.md and user/SYSTEM.md to customize
 pnpm install
 pnpm dev
 ```
@@ -110,7 +111,7 @@ pnpm dev
 - [x] SQLite message history (better-sqlite3, WAL mode)
 - [x] Voice transcription (gpt-4o-mini-transcribe)
 - [x] Web search (Anthropic server tool)
-- [x] SOUL.md — external personality config
+- [x] SOUL.md + SYSTEM.md — external personality and rules config
 - [x] Skills system (detection + activation from .claude/skills/)
 - [x] Structured logging (JSONL daily files + colored console)
 - [x] Chat allowlist (ALLOWED_USER_IDS)

@@ -38,4 +38,4 @@ After making changes, run `pnpm typecheck` to verify.
 - **NEVER read `.env` — under any circumstances, no exceptions**
 - Put logic in `bot.ts` — transport only
 - Call Anthropic API outside `agent.ts`
-- Commit `user/` or `.env`
+- Commit `user/memory/` or `.env`

@@ -11,7 +11,7 @@ Skills are Markdown files that tell MILO how to behave in specific domains. They
 5. Claude follows the skill's instructions, calling tools as needed.
 
 ```
-Tier 0  SOUL.md              always loaded
+Tier 0  SOUL.md + SYSTEM.md  always loaded (personality + operational rules)
 Tier 1  skill frontmatter    name + description (loaded on every request)
 Tier 2  full SKILL.md        loaded when skill is activated
 ```

@@ -26,8 +26,8 @@ cd milo
 cp .env.example .env
 # fill in your API keys
 
-cp user/SOUL.example.md user/SOUL.md
-# customize personality
+# customize personality and rules
+# edit user/SOUL.md and user/SYSTEM.md
 
 pnpm install
 pnpm dev
@@ -47,7 +47,8 @@ OPENAI_API_KEY=
 
 ## Customize MILO
 
-Edit `user/SOUL.md` to set MILO's personality, your name, timezone, and rules.
+- Edit `user/SOUL.md` to set MILO's personality and communication style.
+- Edit `user/SYSTEM.md` to set operational rules, data paths, and context (timezone, language).
 
 ## Docker deploy
 

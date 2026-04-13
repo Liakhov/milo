@@ -23,7 +23,7 @@ flowchart TD
     B --> C[Context builder\nSOUL.md + SYSTEM.md\nskill headers + history]
 
     E([Skills\nSKILL.md instructions\npersonality · rules]) --> D
-    C --> D[Agent loop\nClaude Haiku 4.5\nmax 10 turns]
+    C --> D[Agent loop\nClaude Sonnet 4.6\nmax 10 turns]
     D <-.loop.-> F([Tools\nweb_search · read_data · write_data])
 
     D --> H[Save + Reply\nSQLite + MD files]
@@ -41,20 +41,30 @@ flowchart TD
 
 One agent loop — no fixed routing. Claude sees the message, picks tools, executes steps, and replies when done.
 
-**Example — pharmacy hours:**
+**Example — web search:**
 ```
-You:   "дізнайся до котрої працює аптека на Хрещатику"
-Turn 1: web_search("аптека Хрещатик години роботи")
+You:   "what are the best running shoes under $150 right now?"
+Turn 1: web_search("best running shoes 2026 under $150")
 Turn 2: results received → form reply
-MILO:  "Аптека на Хрещатику 22 працює до 22:00."
+MILO:  "Top 3 in that range: Nike Pegasus 42, Asics Gel-Nimbus 27, Hoka Clifton 10.
+        Pegasus is the all-rounder, Nimbus is softer for long runs, Clifton is the lightest."
 ```
 
-**Example — exchange rate:**
+**Example — workout logging (fitness-writer skill):**
 ```
-You:   "який курс долару?"
-Turn 1: web_search("курс USD UAH сьогодні")
-Turn 2: results received → form reply
-MILO:  "Курс USD/UAH зараз 43,56 грн за долар."
+You:   "log workout: squat 100×5×3, bench press 70×8×3, pull-ups 12×3"
+Turn 1: read_data("fitness/profile.md") → load user profile
+Turn 2: write_data("fitness/workouts.md") → append session
+MILO:  "Logged. Squat 100 kg — new PR, last time was 95×5."
+```
+
+**Example — progress check (fitness-reader skill):**
+```
+You:   "how's my progress over the last month?"
+Turn 1: read_data("fitness/workouts.md") → load history
+Turn 2: read_data("fitness/weight.md") → load weight log
+MILO:  "Past month: squat +10 kg, bench +5 kg, deadlift stalled.
+        Weight steady at 82–83 kg. Deadlift plateaued — consider switching accessories."
 ```
 
 ---
@@ -107,7 +117,7 @@ pnpm dev
 ## Status
 
 - [x] Telegram bot (text + voice)
-- [x] Claude Haiku 4.5
+- [x] Claude Sonnet 4.6
 - [x] SQLite message history (better-sqlite3, WAL mode)
 - [x] Voice transcription (gpt-4o-mini-transcribe)
 - [x] Web search (Anthropic server tool)

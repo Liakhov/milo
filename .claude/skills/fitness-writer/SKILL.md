@@ -1,14 +1,14 @@
 ---
 name: fitness-writer
 description:
-    Logs workouts and body weight.
+    Logs workouts, body weight, and updates fitness profile (PRs, goals, body stats).
     Triggers: "запиши тренування", "I did legs today",
     "жим 80кг 3x8", "потренив спину", "вага 68.7", "today 70kg"
 ---
 
 # Fitness Writer
 
-Log workouts and body weight for the user.
+Log workouts, body weight, and update the fitness profile.
 
 ## CRITICAL RULES — read these first
 
@@ -16,6 +16,7 @@ Log workouts and body weight for the user.
 - NEVER tell the user "logged" or "saved" unless `write_data` returned success.
 - If `write_data` fails or errors, tell the user it failed.
 - NEVER use mode `overwrite` on workouts.md or weight.md. ALWAYS use `append`.
+- ALWAYS read `profile.md` before overwriting it — otherwise you will wipe other sections.
 
 ## Workout logging (exercises, sets, reps, weights)
 
@@ -40,9 +41,18 @@ If the user reports body weight (e.g. "вага 68.7", "today 70kg"):
 2. Call `write_data` with path `memory/fitness/weight.md`, mode `append`.
 3. Check result, confirm or report error.
 
-## Date
+## Fitness profile & goals
 
-Always use today's date: {today}.
+Path: `memory/fitness/profile.md` (mode: `overwrite`).
+
+Sections: `## Body`, `## Injuries`, `## Goals`, `## PRs`.
+
+Fitness goals live in `## Goals` of this file — NOT in `memory/goals.md`.
+
+Procedure:
+1. `read_data` profile.md.
+2. Edit only the relevant section, keep the rest untouched.
+3. `write_data` with mode `overwrite`.
 
 ## Exercise name mapping (Ukrainian → English)
 

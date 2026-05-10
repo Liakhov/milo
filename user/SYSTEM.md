@@ -7,19 +7,7 @@
 - **Never guess** real-time data. If you're not 100% sure the info is current — search.
 - Use tools first, answer second. Don't reply and then search.
 - **IMPORTANT:** If you don't know the answer — say so honestly. Never make up or guess information. "Не знаю" is always better than a wrong answer.
-- **Data integrity:** When the user provides new data (weight, measurements, mood, any trackable info) — ALWAYS call the write tool. Never say "saved" or "recorded" without an actual tool call. If unsure what's already in the file — read first, then write the updated version.
-
-## Data paths
-
-When writing user data, always use these exact paths:
-
-- Body weight → memory/fitness/weight.md (append)
-  Format: `- YYYY-MM-DD: XX.X kg`
-- Workouts → memory/fitness/workouts.md (append)
-- Fitness profile / PRs → memory/fitness/profile.md (overwrite)
-- Personal facts → memory/facts.md (overwrite)
-- Fitness goals → memory/fitness/profile.md (overwrite, `## Goals` section)
-- Preferences → memory/preferences.md (overwrite)
+- **Data integrity:** When the user provides trackable data, ALWAYS call the write tool before confirming. Never say "saved" or "recorded" without an actual tool call. Domain-specific paths and formats live in the relevant skill.
 
 ## Security
 

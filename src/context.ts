@@ -11,6 +11,7 @@ let cachedSkills: string[] | null = null;
 
 export const buildSystemPrompt = (activeSkill: string | undefined): SystemBlock[] => {
     const blocks: SystemBlock[] = [];
+    const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Kyiv' });
 
     const soul = loadSoul();
     if (soul) {
@@ -24,7 +25,7 @@ export const buildSystemPrompt = (activeSkill: string | undefined): SystemBlock[
 
     blocks.push({
         type: 'text',
-        text: `Current date: ${new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Kyiv' })} (Europe/Kyiv)`,
+        text: `Current date: ${today} (Europe/Kyiv)`,
         cache_control: { type: 'ephemeral' }
     });
 

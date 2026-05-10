@@ -54,7 +54,7 @@ You help the user log workouts and update fitness records.
 
 ## Rules
 
-- Always use today's date.
+- Use the current date from the system prompt (no `{today}` placeholders — they are not substituted).
 - Never overwrite workouts.md — always append.
 ```
 

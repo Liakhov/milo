@@ -53,16 +53,16 @@ MILO:  "Top 3 in that range: Nike Pegasus 42, Asics Gel-Nimbus 27, Hoka Clifton 
 **Example — workout logging (fitness-writer skill):**
 ```
 You:   "log workout: squat 100×5×3, bench press 70×8×3, pull-ups 12×3"
-Turn 1: read_data("fitness/profile.md") → load user profile
-Turn 2: write_data("fitness/workouts.md") → append session
-MILO:  "Logged. Squat 100 kg — new PR, last time was 95×5."
+Turn 1: read_data("memory/fitness/profile.md") → check current PRs
+Turn 2: write_data("memory/fitness/workouts.md", mode=append) → append session
+MILO:  "Logged. Squat 100kg — new PR (previous was 95kg)."
 ```
 
 **Example — progress check (fitness-reader skill):**
 ```
 You:   "how's my progress over the last month?"
-Turn 1: read_data("fitness/workouts.md") → load history
-Turn 2: read_data("fitness/weight.md") → load weight log
+Turn 1: read_data("memory/fitness/workouts.md") → load history
+Turn 2: read_data("memory/fitness/weight.md") → load weight log
 MILO:  "Past month: squat +10 kg, bench +5 kg, deadlift stalled.
         Weight steady at 82–83 kg. Deadlift plateaued — consider switching accessories."
 ```
@@ -80,8 +80,8 @@ milo/
 │   └── skills/      # Markdown skills (hot-swappable logic)
 ├── user/            # Personal data (volume mount)
 │   ├── SOUL.md      # MILO's personality and style
-│   ├── SYSTEM.md    # Operational rules, data paths, context
-│   └── memory/      # Long-term facts, goals, and learned preferences (git-ignored)
+│   ├── SYSTEM.md    # Operational rules, security, context (domain-neutral)
+│   └── memory/      # Fitness data and long-term memory (git-ignored)
 ├── docs/            # Architecture, tools, skills, memory, setup, cost
 ├── db/              # Persistent SQLite database
 └── logs/            # JSONL daily log files

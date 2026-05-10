@@ -48,7 +48,7 @@ OPENAI_API_KEY=
 ## Customize MILO
 
 - Edit `user/SOUL.md` to set MILO's personality and communication style.
-- Edit `user/SYSTEM.md` to set operational rules, data paths, and context (timezone, language).
+- Edit `user/SYSTEM.md` to set operational rules, security, and context (timezone, language). Domain-specific paths and procedures live in `.claude/skills/*/SKILL.md`.
 
 ## Docker deploy
 

@@ -20,7 +20,7 @@ Text messages go directly to context. Voice messages go through gpt-4o-mini-tran
 **2. Context builder**
 Assembles everything Claude needs before calling the API:
 - `SOUL.md` — MILO's personality and style
-- `SYSTEM.md` — operational rules (tool usage, data paths, context)
+- `SYSTEM.md` — operational rules (tool usage, security, context)
 - Skill headers — name + description from each `SKILL.md`
 - Conversation history from SQLite
 

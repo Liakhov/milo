@@ -19,7 +19,7 @@ Read and written by MILO via `read_data` / `write_data` tools during conversatio
 ```
 user/
 ├── SOUL.md                  MILO's personality and style
-├── SYSTEM.md                Operational rules, data paths, context
+├── SYSTEM.md                Operational rules, security, context
 └── memory/
     └── fitness/
         ├── profile.md       Body stats, injuries, goals, PRs

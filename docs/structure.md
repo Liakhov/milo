@@ -43,12 +43,12 @@ milo/
 │   └── skills/                  Markdown skill files (hot-swappable logic).
 │       ├── fitness-planner/     Training program creation.
 │       ├── fitness-reader/      Workout analysis and progress review.
-│       ├── fitness-writer/      Workout logging and PR tracking.
+│       ├── fitness-writer/      Logs workouts, body weight; updates profile (PRs, goals).
 │       └── health-buddy/       Well-being nudges (burnout, fatigue).
 │
 ├── user/                        Personal data (volume mount).
 │   ├── SOUL.md                  MILO's personality and style.
-│   ├── SYSTEM.md                Operational rules, tool usage, data paths.
+│   ├── SYSTEM.md                Operational rules, security, context (domain-neutral).
 │   └── memory/                  User data (git-ignored).
 │       └── fitness/
 │           ├── profile.md       Body stats, injuries, goals, PRs.

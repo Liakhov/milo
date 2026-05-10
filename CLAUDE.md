@@ -38,4 +38,5 @@ After making changes, run `pnpm typecheck` to verify.
 - **NEVER read `.env` — under any circumstances, no exceptions**
 - Put logic in `bot.ts` — transport only
 - Call Anthropic API outside `agent.ts`
-- Commit `user/memory/` or `.env`
+- Commit `.env` or the `user/memory` symlink (memory data lives in the
+  separate `milo-memory` repo)

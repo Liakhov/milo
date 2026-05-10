@@ -52,4 +52,4 @@ COPY --chown=node:node package.json ./
 COPY --chown=node:node --from=prod-deps /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build    /usr/src/app/dist         ./dist
 
-CMD ["pnpm", "start"]
+CMD ["node", "dist/index.js"]

@@ -10,7 +10,8 @@ services:
     volumes:
       - db:/usr/src/app/db
       - logs:/usr/src/app/logs
-      - ./user:/usr/src/app/user:rw
+      - ./user:/usr/src/app/user
+      - ${MEMORY_PATH:-../milo-memory}:/usr/src/app/user/memory
       - ./.claude/skills:/usr/src/app/.claude/skills:ro
 volumes:
   db:

@@ -81,7 +81,7 @@ milo/
 ├── user/            # Personal data (volume mount)
 │   ├── SOUL.md      # MILO's personality and style
 │   ├── SYSTEM.md    # Operational rules, security, context (domain-neutral)
-│   └── memory/      # Fitness data and long-term memory (git-ignored)
+│   └── memory/      # → ../milo-memory (symlink to a separate private repo)
 ├── docs/            # Architecture, tools, skills, memory, setup, cost
 ├── db/              # Persistent SQLite database
 └── logs/            # JSONL daily log files
@@ -104,13 +104,26 @@ milo/
 ## Setup
 
 ```bash
+# 1. Clone the engine
 git clone https://github.com/Liakhov/milo.git
+
+# 2. Create your own private memory repo (e.g. on GitHub: <your-user>/milo-memory)
+#    and clone it as a sibling of milo:
+git clone git@github.com:<your-user>/milo-memory.git
+
+# 3. Link memory into milo and configure
 cd milo
-cp .env.example .env          # fill in API keys
+ln -s ../milo-memory user/memory
+cp .env.example .env                # fill in API keys
 # edit user/SOUL.md and user/SYSTEM.md to customize
 pnpm install
 pnpm dev
 ```
+
+`user/memory/` is a symlink to a separate **private** repo you create — the
+engine (`milo`) and your personal data live in different repos with different
+visibility and sync cadence. Docker bind-mounts the same path via the
+`MEMORY_PATH` env var (see [docs/setup.md](docs/setup.md)).
 
 ---
 

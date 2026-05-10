@@ -49,8 +49,8 @@ milo/
 ├── user/                        Personal data (volume mount).
 │   ├── SOUL.md                  MILO's personality and style.
 │   ├── SYSTEM.md                Operational rules, security, context (domain-neutral).
-│   └── memory/                  User data (git-ignored).
-│       └── fitness/
+│   └── memory/  →  ../milo-memory   Symlink to your private memory repo.
+│       └── fitness/             (Each user owns their own milo-memory repo.)
 │           ├── profile.md       Body stats, injuries, goals, PRs.
 │           ├── program.md       Current training plan.
 │           ├── workouts.md      Workout log (append-only).
@@ -77,10 +77,21 @@ milo/
 ## Key separation
 
 ```
-src/           code — rebuilt on deploy
-.claude/skills agent instructions — edited live, no redeploy
-user/          personal data — never touched by deploys
+src/           code           — rebuilt on deploy             (milo repo)
+.claude/skills instructions   — edited live, no redeploy      (milo repo)
+user/SOUL.md   personality    — never touched by deploys      (milo repo)
+user/memory/   personal data  — separate lifecycle, append    (milo-memory repo)
 ```
+
+Code and data live in separate repos:
+- `milo` — TypeScript engine, skills, system prompts. Public-ready.
+- `milo-memory` — markdown data only. Private. Append-heavy (workouts, weight),
+  written by the agent, synced between Mac (Claude Code) and VPS (Telegram bot)
+  via plain `git pull/push`.
+
+Locally, `milo/user/memory` is a symlink to a sibling clone of `milo-memory`.
+In Docker, `user/memory` is a bind mount overridable via `MEMORY_PATH` env var
+(see [setup.md](setup.md)).
 
 ## Tools architecture
 

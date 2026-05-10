@@ -4,4 +4,4 @@ dist
 db
 logs
 .env
-user/memory/*
+user/memory

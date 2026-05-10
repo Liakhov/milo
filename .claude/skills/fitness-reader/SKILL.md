@@ -3,8 +3,10 @@ name: fitness-reader
 description:
     Reads and analyzes fitness data — workout history, progress, stats.
     Triggers on questions about training progress, stats, body weight.
-    Examples: "який мій прогрес?", "покажи тренування",
-    "як я тренуюсь?", "скільки я жму?", "моя вага"
+    Examples (UK): "який мій прогрес?", "покажи тренування",
+    "як я тренуюсь?", "скільки я жму?", "моя вага".
+    Examples (EN): "show my progress", "what's my bench?",
+    "my weight history", "am I improving?", "show last workouts".
 ---
 
 # Fitness Reader

@@ -2,8 +2,10 @@
 name: fitness-planner
 description:
     Creates training programs and suggests what to train next.
-    Triggers: "сплануй тренування", "create a program",
-    "що тренувати?", "програма на тиждень", "what to train next"
+    Examples (UK): "сплануй тренування", "що тренувати?",
+    "програма на тиждень", "склади мені план".
+    Examples (EN): "create a program", "what to train next",
+    "weekly plan", "build me a routine", "design a workout split".
 ---
 
 # Fitness Planner
@@ -12,9 +14,10 @@ Create, adjust, or review the user's training program.
 
 ## CRITICAL RULES
 
-- NEVER call `write_data` unless the user confirms they want to save.
-- If you call `write_data`, use path `memory/fitness/program.md`, mode `overwrite`.
-- Check `write_data` response before confirming save.
+- Generation flow is READ-ONLY. Do NOT call `write_data` while designing or presenting the program.
+- After presenting, ask the user if they want to save. Wait for an explicit affirmative ("yes", "так", "save", "збережи"). Anything else = no save.
+- A user request that triggers this skill (e.g. "create a program") is NOT confirmation to save.
+- Only after explicit confirmation: `write_data`, path `memory/fitness/program.md`, mode `overwrite`. Then check response before reporting success.
 
 ## Which files to read
 

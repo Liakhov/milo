@@ -1,7 +1,6 @@
 const required = [
     'TELEGRAM_BOT_TOKEN',
-    'ANTHROPIC_API_KEY',
-    'OPENAI_API_KEY'
+    'ANTHROPIC_API_KEY'
 ] as const;
 
 for (const key of required) {
@@ -45,7 +44,7 @@ if (!publicMode && allowedUserIds.length === 0) {
 export const env = {
     anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
     telegramToken: process.env.TELEGRAM_BOT_TOKEN!,
-    openaiApiKey: process.env.OPENAI_API_KEY!,
+    openaiApiKey: process.env.OPENAI_API_KEY || undefined,
     publicMode,
     allowedUserIds
 };

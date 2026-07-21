@@ -15,7 +15,7 @@ Both modes read from the same `user/` directory — data written by the Telegram
 - pnpm
 - Telegram bot token — create via [@BotFather](https://t.me/BotFather)
 - Anthropic API key — [console.anthropic.com](https://console.anthropic.com)
-- OpenAI API key — for gpt-4o-mini-transcribe STT (voice messages only)
+- OpenAI API key — optional, for gpt-4o-mini-transcribe STT (voice messages only)
 
 ## Local development
 
@@ -62,9 +62,13 @@ ANTHROPIC_API_KEY=
 PUBLIC_MODE=false        # set true only to intentionally allow everyone
 ALLOWED_USER_IDS=12345678 # comma-separated positive numeric Telegram user IDs
 
-# For voice messages
+# Optional: enables voice messages. Text messages work without it.
 OPENAI_API_KEY=
 ```
+
+When `OPENAI_API_KEY` is omitted, MILO starts in text-only mode. Voice messages
+receive an explanation that voice support is disabled; all text functionality
+continues to work normally.
 
 ### Telegram access control
 

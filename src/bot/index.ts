@@ -1,7 +1,7 @@
 import { Bot } from 'grammy';
 
 import { env } from '../env.js';
-import { stt } from '../stt.js';
+import { isVoiceEnabled, stt, VOICE_DISABLED_MESSAGE } from '../stt.js';
 import { logger } from '../logger.js';
 import { botMiddleware } from './middleware.js';
 import { downloadTelegramFile } from './utils.js';
@@ -52,6 +52,11 @@ export const setBotHandlers = (onMessage: MessageHandler) => {
 
     privateChat.on('message:voice', async (ctx) => {
         await ctx.replyWithChatAction('typing');
+
+        if (!isVoiceEnabled()) {
+            await ctx.reply(VOICE_DISABLED_MESSAGE);
+            return;
+        }
 
         try {
             const file = await ctx.getFile();

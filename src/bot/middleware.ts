@@ -18,8 +18,7 @@ export const botMiddleware = async (ctx: Context, next: NextFunction) => {
         return;
     }
 
-    const isPublicMode = !env.allowedUserIds.length;
-    const isAllowedAccess = isPublicMode || env.allowedUserIds.includes(from.id);
+    const isAllowedAccess = env.publicMode || env.allowedUserIds.includes(from.id);
     if (!isAllowedAccess) {
         log.warn('Unauthorized access blocked', {
             userId: from.id,

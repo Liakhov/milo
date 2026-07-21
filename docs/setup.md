@@ -34,7 +34,7 @@ git clone git@github.com:<your-user>/milo-memory.git
 cd milo
 ln -s ../milo-memory user/memory     # symlink for local dev
 
-cp .env.example .env                 # fill in your API keys
+cp .env-example .env                 # fill in API keys and Telegram access settings
 # edit user/SOUL.md and user/SYSTEM.md to customize
 
 pnpm install
@@ -59,11 +59,21 @@ caring that the data lives in a different repo.
 # Required
 TELEGRAM_BOT_TOKEN=
 ANTHROPIC_API_KEY=
-ALLOWED_USER_IDS=        # comma-separated Telegram user IDs
+PUBLIC_MODE=false        # set true only to intentionally allow everyone
+ALLOWED_USER_IDS=12345678 # comma-separated positive numeric Telegram user IDs
 
 # For voice messages
 OPENAI_API_KEY=
 ```
+
+### Telegram access control
+
+MILO is private by default. With `PUBLIC_MODE=false` (or omitted),
+`ALLOWED_USER_IDS` must contain at least one valid numeric Telegram user ID;
+otherwise startup fails.
+
+Set `PUBLIC_MODE=true` only to intentionally allow every Telegram user. Invalid
+values in either setting are always rejected during startup.
 
 ## Customize MILO
 

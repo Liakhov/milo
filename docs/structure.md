@@ -10,7 +10,7 @@ milo/
 │   ├── bot/
 │   │   ├── index.ts              Telegram transport. Receives messages,
 │   │   │                         parses type (text/voice/photo/document).
-│   │   ├── middleware.ts         Access control, rate limiting.
+│   │   ├── middleware.ts         Fail-closed Telegram access control.
 │   │   └── utils.ts              Message parsing helpers.
 │   │
 │   ├── ai.ts                    Anthropic client singleton.
@@ -65,9 +65,9 @@ milo/
 │   ├── cost.md
 │   └── structure.md             ← this file
 │
-├── .env.example
+├── .env-example
 ├── .gitignore
-├── docker-compose.yml
+├── compose.yaml
 ├── Dockerfile
 ├── package.json
 ├── tsconfig.json

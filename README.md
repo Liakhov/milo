@@ -114,7 +114,7 @@ git clone git@github.com:<your-user>/milo-memory.git
 # 3. Link memory into milo and configure
 cd milo
 ln -s ../milo-memory user/memory
-cp .env.example .env                # fill in API keys
+cp .env-example .env                # fill in API keys and Telegram access settings
 # edit user/SOUL.md and user/SYSTEM.md to customize
 pnpm install
 pnpm dev
@@ -124,6 +124,21 @@ pnpm dev
 engine (`milo`) and your personal data live in different repos with different
 visibility and sync cadence. Docker bind-mounts the same path via the
 `MEMORY_PATH` env var (see [docs/setup.md](docs/setup.md)).
+
+### Telegram access
+
+MILO is private by default. Keep `PUBLIC_MODE=false` and list the Telegram user
+IDs that may use the bot:
+
+```env
+PUBLIC_MODE=false
+ALLOWED_USER_IDS=12345678,87654321
+```
+
+The bot refuses to start if the allowlist is empty or invalid. To intentionally
+allow every Telegram user, set `PUBLIC_MODE=true`; in that mode the allowlist
+does not restrict access. See [Setup](docs/setup.md#telegram-access-control) for
+the complete behavior.
 
 ---
 
@@ -137,7 +152,7 @@ visibility and sync cadence. Docker bind-mounts the same path via the
 - [x] SOUL.md + SYSTEM.md — external personality and rules config
 - [x] Skills system (detection + activation from .claude/skills/)
 - [x] Structured logging (JSONL daily files + colored console)
-- [x] Chat allowlist (ALLOWED_USER_IDS)
+- [x] Fail-closed Telegram access control (PUBLIC_MODE + ALLOWED_USER_IDS)
 - [x] Dockerfile (multi-stage build)
 - [x] Fitness tracking (read_data/write_data + fitness skills)
 - [x] Two modes: Telegram bot + Claude Code CLI with shared data

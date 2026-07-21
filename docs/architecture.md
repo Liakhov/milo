@@ -9,15 +9,21 @@ Two interfaces share the same codebase and data:
 - **Claude Code CLI** — direct access to the same skills and `user/` data
 
 ```
-Input → STT? → Context → Agent loop → Reply + Save
+Access control → Input → STT? → Context → Agent loop → Reply + Save
 ```
 
 ## Request flow (Telegram)
 
-**1. Input**
-Text messages go directly to context. Voice messages go through gpt-4o-mini-transcribe first.
+**1. Access control**
+Telegram middleware rejects bots and unauthorized users before any paid API is
+called. Private mode uses `ALLOWED_USER_IDS`; public access must be explicitly
+enabled with `PUBLIC_MODE=true`.
 
-**2. Context builder**
+**2. Input**
+Text messages go directly to context. Voice messages go through
+gpt-4o-mini-transcribe first.
+
+**3. Context builder**
 Assembles everything Claude needs before calling the API:
 - `SOUL.md` — MILO's personality and style
 - `SYSTEM.md` — operational rules (tool usage, security, context)
@@ -26,7 +32,7 @@ Assembles everything Claude needs before calling the API:
 
 If Claude activates a skill, `context.ts` loads the full `SKILL.md` on the next turn.
 
-**3. Agent loop**
+**4. Agent loop**
 Claude receives context + available tools. It decides which tools to call and in what order. Each tool call is one turn.
 
 - Custom tools (`read_data`, `write_data`) — executed locally, results fed back
@@ -34,7 +40,7 @@ Claude receives context + available tools. It decides which tools to call and in
 
 Limit: `max_turns = 10`
 
-**4. Reply + save**
+**5. Reply + save**
 Send reply to Telegram. Save message to SQLite.
 
 ## Claude Code mode
